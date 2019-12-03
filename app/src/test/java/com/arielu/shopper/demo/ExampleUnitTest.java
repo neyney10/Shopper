@@ -1,4 +1,4 @@
-package com.arielu.shopper;
+package com.arielu.shopper.demo;
 
 import org.junit.Test;
 
