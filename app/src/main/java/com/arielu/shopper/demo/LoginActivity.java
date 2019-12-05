@@ -1,6 +1,12 @@
 
 package com.arielu.shopper.demo;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -144,6 +150,7 @@ public class LoginActivity extends AppCompatActivity  {
         // if the account succesfully created then it will automatically sign in - then check if it indeed signed in.
         createNewAccountFirebase(this.editTextEmail.getText().toString(),
                          this.editTextPassword.getText().toString());
+
     }
 
 
