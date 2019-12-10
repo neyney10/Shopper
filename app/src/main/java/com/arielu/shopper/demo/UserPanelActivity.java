@@ -6,13 +6,21 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.models.Product;
 import com.arielu.shopper.demo.models.User;
+import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,15 +28,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UserPanelActivity extends AppCompatActivity {
 
-
     //// Firebase authentication ////
     private FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +44,24 @@ public class UserPanelActivity extends AppCompatActivity {
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        TextView txt_name = findViewById(R.id.txt_name);
+        txt_name.setTextColor(Color.rgb(211,211,211));
+        Observable<User> o = Firebase.getUserData(mAuth.getCurrentUser().getUid());
+        o.subscribe(new ObserverFirebaseTemplate<User>() {
+                        @Override
+                        public void onNext(User user) {
+                            txt_name.setText(user.getName() + " (" + user.getUsername() + ")");
+                            txt_name.setTextColor(Color.BLACK);
+                        }
+                    });
+    }
 
     public void signOutClick(View view)
     {
@@ -54,78 +77,9 @@ public class UserPanelActivity extends AppCompatActivity {
         }
     }
 
-    public void databaseTest2Click(View view)
+    public void onListBtnClick(View view)
     {
-        Observable o = Firebase.getProductList();
-        o.subscribe(new Observer() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                Log.d("observer","1");
-            }
-
-            @Override
-            public void onNext(Object o) {
-                Log.d("observer","2");
-                Log.d("observer",o.toString());
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.d("observer","3");
-
-            }
-
-            @Override
-            public void onComplete() {
-                Log.d("observer","4");
-            }
-        });
-    }
-
-    public void databaseTestClick(View view)
-    {
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("users");
-
-        myRef.child(mAuth.getCurrentUser().getUid()).setValue(new User("customer1@shopper.co.il","Nikolai"));
-
-        // read from database
-        myRef = database.getReference("user_shopping_lists"+"/"+mAuth.getCurrentUser().getUid());
-
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("Firebase", "data retrieved: "+dataSnapshot.getValue());
-                ArrayList<String> user_lists = (ArrayList<String>) dataSnapshot.getValue();
-                Log.d("TestDebug", "user_lists:" +user_lists.toString());
-
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("shopping_list"+"/"+String.valueOf(user_lists.get(1)));
-
-                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("Firebase", "data retrieved: "+dataSnapshot.getValue());
-                        HashMap<String,String> products = (HashMap<String,String>) dataSnapshot.getValue();
-                        Log.d("TestDebug", "products:" +products.toString());
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        // ...
-                    }
-                });
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // ...
-            }
-        });
-
-
+        Intent intent = new Intent(this, UserShoppingListActivity.class);
+        startActivity(intent);
     }
 }

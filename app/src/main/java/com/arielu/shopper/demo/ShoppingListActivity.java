@@ -1,6 +1,7 @@
 package com.arielu.shopper.demo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.rxjava3.core.Observable;
 
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,9 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.arielu.shopper.demo.database.Firebase;
+import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +25,9 @@ public class ShoppingListActivity extends AppCompatActivity {
     ListView itemList;
     ExpandableListView ELV;
     ExpandableListAdapter ELA;
-    public void generateItems(){
+
+
+    public void generateItems() {
         items = new Item[20];
         for (int i = 0; i < 20; i++) {
             items[i] = new Item("Item"+i,Math.round((Math.random()*10)*100)/100.0);
@@ -49,6 +55,8 @@ public class ShoppingListActivity extends AppCompatActivity {
     public void myCart(View view) {
         Toast toast = Toast.makeText(getApplicationContext(), "worked", Toast.LENGTH_SHORT);
         toast.show();
+
+
     }
 
 }
