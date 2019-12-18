@@ -5,21 +5,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.arielu.shopper.demo.classes.Product;
+
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class ListAdapter2 extends BaseExpandableListAdapter {
     private Context context;
-    private List<String> listTitles;
-    private TreeMap<String,ArrayList<Item>> list;
+    private TreeMap<String,ArrayList<Product>> list;
 
-    public ListAdapter2(Context context,List<String> listTitles,TreeMap<String, ArrayList<Item>> list) {
+    public ListAdapter2(Context context,TreeMap<String, ArrayList<Product>> list) {
         this.context = context;
-        this.listTitles = listTitles;
         this.list = list;
     }
 
@@ -39,7 +40,7 @@ public class ListAdapter2 extends BaseExpandableListAdapter {
     }
 
     @Override
-    public Item getChild(int i, int i1) {
+    public Product getChild(int i, int i1) {
         return list.get(list.keySet().toArray()[i]).get(i1);
     }
 
@@ -76,9 +77,10 @@ public class ListAdapter2 extends BaseExpandableListAdapter {
             LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.list_item, null);
         }
-        Item currItem = getChild(i,i1);
-        ((TextView)view.findViewById(R.id.item_name)).setText(currItem.getName());
-        ((TextView)view.findViewById(R.id.item_price)).setText("\u20AA"+currItem.getPrice());
+        Product currItem = getChild(i,i1);
+        ((TextView)view.findViewById(R.id.item_name)).setText(currItem.getProductName());
+        ((TextView)view.findViewById(R.id.item_price)).setText("\u20AA"+currItem.getProductPrice());
+        ((ImageView)view.findViewById(R.id.item_image)).setImageBitmap(currItem.ProductImage());
         return view;
     }
 
@@ -86,6 +88,8 @@ public class ListAdapter2 extends BaseExpandableListAdapter {
     public boolean isChildSelectable(int i, int i1) {
         return true;
     }
+
+
 
 
 }
