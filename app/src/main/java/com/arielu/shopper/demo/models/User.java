@@ -11,10 +11,15 @@ public class User {
     private enum UserType{Customer,Worker};
     private UserType userType;
     //// Constructors
-    public User(String username, String name)
-    {
+    public User(String username,String name){
         setUsername(username);
         setName(name);
+    }
+    public User(String name,String phoneNumber,int userType)
+    {
+        setName(name);
+        setPhoneNumber(phoneNumber);
+        setUserType(userType);
     }
 
     //// Getters and Setters

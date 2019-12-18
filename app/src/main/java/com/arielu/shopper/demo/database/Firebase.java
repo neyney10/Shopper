@@ -49,6 +49,11 @@ final public class Firebase {
 
     }
 
+    public static void setUserData(String uID, User user){
+        firebaseDBSetRequest("users/"+uID, user);
+    }
+
+
     public static Observable<User> getUserData(String uID)
     {
         Observable o = firebaseDBGetRequest("users/"+uID,(dataSnapshot) -> {
@@ -87,7 +92,5 @@ final public class Firebase {
 
         return o;
     }
-
-
 
 }

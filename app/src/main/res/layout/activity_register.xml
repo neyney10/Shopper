@@ -30,6 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/email_field"
+        android:inputType="textEmailAddress"
         android:hint="@string/email_field"/>
     <TextView
         android:layout_width="wrap_content"
@@ -40,6 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/password_field"
+        android:inputType="textPassword"
         android:hint="@string/password_field"/>
     <TextView
         android:layout_width="wrap_content"
@@ -50,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/confirm_password_field"
+        android:inputType="textPassword"
         android:hint="@string/confirm_password_field"/>
     <TextView
         android:layout_width="wrap_content"
@@ -60,6 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/phone_number_field"
+        android:inputType="phone"
         android:hint="@string/phone_number_field"/>
     <Spinner
         android:layout_width="wrap_content"

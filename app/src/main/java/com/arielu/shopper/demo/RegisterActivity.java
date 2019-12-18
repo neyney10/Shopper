@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.arielu.shopper.demo.database.Firebase;
+import com.arielu.shopper.demo.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -22,6 +24,8 @@ public class RegisterActivity extends AppCompatActivity {
     private Spinner spinner;
     private EditText email,password,confirmPassword,phoneNumber,name;
     private FirebaseAuth mAuth;
+    private User userData;
+    private FirebaseUser user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private void createNewAccountFirebase(String email, String password)
+    private void createNewAccountFirebase(String email, String password,String name,String phoneNumber,int userType)
     {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -67,7 +71,9 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("Firebase", "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            user = mAuth.getCurrentUser();
+                            userData = new User(name,phoneNumber,userType);
+                            Firebase.setUserData(user.getUid(),userData);
                             updateUserUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -84,8 +90,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void Register(View view){
                 createNewAccountFirebase(this.email.getText().toString(),
-                        this.password.getText().toString());
-        Toast toast = Toast.makeText(getApplicationContext(), "you have been registered", Toast.LENGTH_SHORT);
-        toast.show();
+                        this.password.getText().toString(),this.name.getText().toString()
+                        ,this.phoneNumber.getText().toString(),this.spinner.getSelectedItemPosition());
+        Toast.makeText(getApplicationContext(), "you have been registered", Toast.LENGTH_SHORT).show();
     }
 }
