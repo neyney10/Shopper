@@ -7,15 +7,17 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeMap;
 
-public class ListAdapter extends BaseExpandableListAdapter {
+public class ListAdapter2 extends BaseExpandableListAdapter {
     private Context context;
     private List<String> listTitles;
-    private TreeMap<String,Item[]> list;
+    private TreeMap<String,ArrayList<Item>> list;
 
-    public ListAdapter(Context context,List<String> listTitles,TreeMap<String, Item[]> list) {
+    public ListAdapter2(Context context,List<String> listTitles,TreeMap<String, ArrayList<Item>> list) {
         this.context = context;
         this.listTitles = listTitles;
         this.list = list;
@@ -28,17 +30,17 @@ public class ListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int i) {
-        return list.get(listTitles.get(i)).length;
+        return list.get(list.keySet().toArray()[i]).size();
     }
 
     @Override
     public Object getGroup(int i) {
-        return listTitles.get(i);
+        return list.keySet().toArray()[i];
     }
 
     @Override
     public Item getChild(int i, int i1) {
-        return list.get(listTitles.get(i))[i1];
+        return list.get(list.keySet().toArray()[i]).get(i1);
     }
 
     @Override

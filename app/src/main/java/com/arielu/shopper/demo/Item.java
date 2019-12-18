@@ -1,5 +1,7 @@
 package com.arielu.shopper.demo;
 
+import java.util.Map;
+
 /**
  * Item contains all the data of each item.
  * Example: name,price,sales,onSale,imageId,itemId
@@ -13,6 +15,16 @@ public class Item {
         this.name = name;
         this.price = price;
     }
+
+    public static Item createFromMap(Map<String,String> map)
+    {
+        Item I  = new Item(map.get("ItemName"),Double.parseDouble(map.get("ItemPrice")));
+
+        I.setItemId(map.get("ItemCode"));
+
+        return I;
+    }
+
     public Item(String name, String sales, String imageId, String itemId, boolean onSale, double price, int units) {
         this.name = name;
         this.sales = sales;

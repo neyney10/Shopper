@@ -9,9 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ShoppingListActivity"></activity>
-        <activity android:name=".UserPanelActivity"></activity>
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".SearchItemsActivity"></activity>
+        <activity android:name=".UserShoppingListActivity" />
+        <activity android:name=".ShoppingListActivity" />
+        <activity android:name=".UserPanelActivity" />
+        <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
