@@ -15,15 +15,60 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="1.2">
 
             <Button
                 android:id="@+id/btn_searchitems"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="2dp"
+                android:layout_weight="0.4"
+                android:background="@android:drawable/ic_input_add"
                 android:onClick="btn_searchitemsClick"
-                android:text="Search items to add" />
+                android:padding="25dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:minWidth="205dp"
+                android:minHeight="48dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_listname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:text="[List Name Here]"
+                    android:textSize="28dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_permissions"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="0.35"
+                android:background="@drawable/permission3"
+                android:backgroundTint="@color/design_default_color_primary_dark"
+                android:onClick="btn_permissionsClick" />
+
+            <Button
+                android:id="@+id/btn_save"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="0.35"
+                android:background="@android:drawable/ic_menu_save"
+                android:backgroundTint="@android:color/black"
+                android:onClick="btn_saveClick" />
 
         </LinearLayout>
 
@@ -31,7 +76,6 @@
             android:id="@+id/user_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
             android:dividerHeight="2dp"
             android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft">
 

@@ -6,6 +6,7 @@ import io.reactivex.rxjava3.core.Observable;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -14,18 +15,21 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 
+import com.arielu.shopper.demo.classes.ImageDownloader;
 import com.arielu.shopper.demo.database.Firebase;
-import com.arielu.shopper.demo.models.Product;
+import com.arielu.shopper.demo.classes.Product;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchItemsActivity extends AppCompatActivity {
 
 
-    private ArrayList<Product> products;
-    private ArrayList<Product> products_filtered;
+    private List<Product> products;
+    private List<Product> products_filtered;
     private ArrayAdapter<Product> adapter;
     private Product selected_item;
 
@@ -39,7 +43,7 @@ public class SearchItemsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_items);
 
         products = new ArrayList<>(2);
-        products_filtered = products = new ArrayList<>(30);
+        products_filtered = new ArrayList<>(30);
 
         LinkUI();
     }
@@ -48,10 +52,10 @@ public class SearchItemsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        Observable<ArrayList<Product>> o = Firebase.getProductList();
-        o.subscribe(new ObserverFirebaseTemplate<ArrayList<Product>>() {
+        Observable<List<Product>> o = Firebase.getProductList();
+        o.subscribe(new ObserverFirebaseTemplate<List<Product>>() {
             @Override
-            public void onNext(ArrayList<Product> prods) {
+            public void onNext(List<Product> prods) {
                 products = prods;
             }
         });
@@ -67,38 +71,31 @@ public class SearchItemsActivity extends AppCompatActivity {
         lv_products_filtered.setAdapter(adapter);
 
         // searchbox
-        AutoCompleteTextView search_text = findViewById(R.id.tv_searchbox);
-        search_text.setThreshold(2);
+        SearchView sv_search = findViewById(R.id.sv_search);
+        
 
-        ArrayAdapter<Product> adapter_hints_search = new ArrayAdapter<Product>(SearchItemsActivity.this,R.layout.item_test_sample,R.id.sample_text_view,products);
-        search_text.setAdapter(adapter_hints_search);
+        sv_search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-        search_text.addTextChangedListener(new TextWatcher() {
+
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //?
+            public boolean onQueryTextSubmit(String s) {
+                return false;
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //?
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
+            public boolean onQueryTextChange(String s) {
                 products_filtered.clear();
                 for(Product p : products)
                 {
-
-                    if(p.getItemName().contains(search_text.getText().toString()))
+                    if(p.getProductName().contains(s))
                         products_filtered.add(p);
                 }
                 adapter.notifyDataSetChanged();
+
+                return false;
             }
-
-
         });
+
 
 
     }
@@ -109,8 +106,11 @@ public class SearchItemsActivity extends AppCompatActivity {
 
     public void btn_chooseitemClick(View view)
     {
+
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("result",this.selected_item);
+        // get image
+        //this.selected_item.setProductImage(ImageDownloader.getBitmapFromURL(this.selected_item.getProductImageUrl()));
+        returnIntent.putExtra("result",this.selected_item.toBundle());
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }

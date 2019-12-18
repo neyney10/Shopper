@@ -11,16 +11,21 @@ public class Item {
     boolean onSale;
     double price;
     int units;
+
+    public Item(){
+        // empty constructor for firebase.
+    }
+
     public Item(String name,double price){
         this.name = name;
         this.price = price;
     }
 
-    public static Item createFromMap(Map<String,String> map)
+    public static Item createFromMap(Map<String,Object> map)
     {
-        Item I  = new Item(map.get("ItemName"),Double.parseDouble(map.get("ItemPrice")));
+        Item I  = new Item((String) map.get("name"),(Double) map.get("price"));
 
-        I.setItemId(map.get("ItemCode"));
+        I.setItemId((String) map.get("itemId"));
 
         return I;
     }

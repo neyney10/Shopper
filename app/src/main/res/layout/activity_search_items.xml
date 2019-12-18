@@ -8,14 +8,21 @@
     android:weightSum="10"
     tools:context=".SearchItemsActivity">
 
-    <AutoCompleteTextView
-        android:id="@+id/tv_searchbox"
+    <SearchView
+        android:id="@+id/sv_search"
         android:layout_width="match_parent"
-        android:layout_height="49dp"
+        android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:background="?attr/editTextBackground"
-        android:backgroundTint="@color/colorShopperLogo"
-        android:textSize="24sp" />
+        android:iconifiedByDefault="false" >
+
+    </SearchView>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_weight="0"
+        android:background="@color/colorShopperLogo" />
 
     <LinearLayout
         android:layout_width="match_parent"

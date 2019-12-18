@@ -26,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -45,22 +46,48 @@ public class UserPanelActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
+        //
+        TextView txt_name = findViewById(R.id.txt_name);
+        txt_name.setTextColor(Color.rgb(211,211,211));
+        Observable<User> o = Firebase.getUserData(mAuth.getCurrentUser().getUid());
+        o.subscribe(new ObserverFirebaseTemplate<User>() {
+            @Override
+            public void onNext(User user) {
+                txt_name.setText(user.getName() + " (" + user.getUsername() + ")");
+                txt_name.setTextColor(Color.BLACK);
+            }
+        });
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        TextView txt_name = findViewById(R.id.txt_name);
-        txt_name.setTextColor(Color.rgb(211,211,211));
-        Observable<User> o = Firebase.getUserData(mAuth.getCurrentUser().getUid());
-        o.subscribe(new ObserverFirebaseTemplate<User>() {
-                        @Override
-                        public void onNext(User user) {
-                            txt_name.setText(user.getName() + " (" + user.getUsername() + ")");
-                            txt_name.setTextColor(Color.BLACK);
-                        }
-                    });
+        test();
+
+    }
+
+    public void test() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("test/root/Items/Item");
+
+        Query query = reference.orderByChild("ItemPrice").equalTo("6.40");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // dataSnapshot is the "issue" node with all children with id 0
+                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        // do something with the individual "issues"
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void signOutClick(View view)
@@ -80,6 +107,8 @@ public class UserPanelActivity extends AppCompatActivity {
     public void onListBtnClick(View view)
     {
         Intent intent = new Intent(this, UserShoppingListActivity.class);
+        intent.putExtra("listID","0");
+        intent.putExtra("listName","My LiSt!");
         startActivity(intent);
     }
 }
