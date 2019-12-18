@@ -7,4 +7,18 @@
     <string name="register_here">Register</string>
     <string name="forgot_password">Forgot</string>
     <string name="sales">Sale</string>
+    <string name="name_text">Name</string>
+    <string name="email_text">Email</string>
+    <string name="password_text">Enter password length of six</string>
+    <string name="password_confirm_text">Re-enter password for confirmation</string>
+    <string name="phone_number_text">Phone Number</string>
+    <string name="name_field">Enter name here</string>
+    <string name="email_field">Enter email here</string>
+    <string name="password_field">Enter password here</string>
+    <string name="confirm_password_field">Enter confirm password here</string>
+    <string name="phone_number_field">Enter phone number here</string>
+    <string-array name="spinner_items">
+        <item>Customer</item>
+        <item>Worker</item>
+    </string-array>
 </resources>

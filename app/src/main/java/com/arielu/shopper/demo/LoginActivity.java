@@ -148,9 +148,10 @@ public class LoginActivity extends AppCompatActivity  {
     {
         // create a new account in firebase
         // if the account succesfully created then it will automatically sign in - then check if it indeed signed in.
-        createNewAccountFirebase(this.editTextEmail.getText().toString(),
-                         this.editTextPassword.getText().toString());
-
+//        createNewAccountFirebase(this.editTextEmail.getText().toString(),
+//                         this.editTextPassword.getText().toString());
+        Intent intent = new Intent(this,RegisterActivity.class);
+        startActivity(intent);
     }
 
 
