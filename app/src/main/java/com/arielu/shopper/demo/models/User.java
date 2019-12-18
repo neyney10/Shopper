@@ -7,10 +7,9 @@ package com.arielu.shopper.demo.models;
 public class User {
 
     //// private variables.
-    private String username;
-    private String name;
-
-
+    private String username,name,password,phoneNumber;
+    private enum UserType{Customer,Worker};
+    private UserType userType;
     //// Constructors
     public User(String username, String name)
     {
@@ -40,5 +39,29 @@ public class User {
     public String getName()
     {
         return this.name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = UserType.values()[userType];
     }
 }
