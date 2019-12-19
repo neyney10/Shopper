@@ -2,6 +2,7 @@ package com.arielu.shopper.demo;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -65,7 +66,8 @@ public class RegisterActivity extends AppCompatActivity {
         fieldsValidation();
     }
     private void fieldsValidation(){
-
+        Drawable defaultInput = ContextCompat.getDrawable(getApplicationContext(),R.drawable.input_theme);
+        Drawable wrongInput = ContextCompat.getDrawable(getApplicationContext(),R.drawable.wrong_input_theme);
         int pantone = ContextCompat.getColor(getApplicationContext(), R.color.pantone);
         name.addTextChangedListener(new TextWatcher() {
             @Override
@@ -82,10 +84,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 isValidName=!name.getText().toString().isEmpty();
                 if (isValidName){
-                    if (nameText.getCurrentTextColor()==pantone)
+                    if (nameText.getCurrentTextColor()==pantone) {
                         nameText.setTextColor(Color.BLACK);
+                        name.setBackground(defaultInput);
+                    }
                 }else{
                     nameText.setTextColor(pantone);
+                    name.setBackground(wrongInput);
                 }
             }
         });
@@ -102,10 +107,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 isValidEmail = email.getText().toString().contains("@");
                 if(isValidEmail) {
-                    if (emailText.getCurrentTextColor()==pantone)
+                    if (emailText.getCurrentTextColor()==pantone) {
                         emailText.setTextColor(Color.BLACK);
+                        email.setBackground(defaultInput);
+                    }
                 }else{
                     emailText.setTextColor(pantone);
+                    email.setBackground(wrongInput);
                 }
             }
         });
@@ -124,10 +132,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 isValidPassword=Pattern.matches("^.{6,}$",password.getText());
                 if (isValidPassword){
-                    if (passwordText.getCurrentTextColor()==pantone)
+                    if (passwordText.getCurrentTextColor()==pantone) {
                         passwordText.setTextColor(Color.BLACK);
+                        password.setBackground(defaultInput);
+                    }
                 }else{
                     passwordText.setTextColor(pantone);
+                    password.setBackground(wrongInput);
                 }
             }
         });
@@ -145,10 +156,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 isValidConfirmPassword=confirmPassword.getText().toString().equals(password.getText().toString());
                 if (isValidConfirmPassword){
-                    if (confirmPasswordText.getCurrentTextColor()==pantone)
+                    if (confirmPasswordText.getCurrentTextColor()==pantone) {
                         confirmPasswordText.setTextColor(Color.BLACK);
+                        confirmPassword.setBackground(defaultInput);
+                    }
                 }else{
                     confirmPasswordText.setTextColor(pantone);
+                    confirmPassword.setBackground(wrongInput);
                 }
             }
         });
@@ -166,10 +180,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 isValidPhoneNumber = Pattern.matches("^\\d{10}$",phoneNumber.getText().toString());
                 if (isValidPhoneNumber){
-                    if (phoneNumberText.getCurrentTextColor()==pantone)
+                    if (phoneNumberText.getCurrentTextColor()==pantone) {
                         phoneNumberText.setTextColor(Color.BLACK);
+                        phoneNumber.setBackground(defaultInput);
+                    }
                 }else{
                     phoneNumberText.setTextColor(pantone);
+                    phoneNumber.setBackground(wrongInput);
                 }
             }
         });
