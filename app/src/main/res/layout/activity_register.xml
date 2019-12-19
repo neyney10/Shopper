@@ -3,6 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 <TextView
+    style="@style/ttl_style"
     android:text="@string/register_here"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,6 +13,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <TextView
+        style="@style/common_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/enter_name"
@@ -22,6 +24,7 @@
         android:id="@+id/name_field"
         android:hint="@string/name_field"/>
     <TextView
+        style="@style/common_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/enter_email"
@@ -33,6 +36,7 @@
         android:inputType="textEmailAddress"
         android:hint="@string/email_field"/>
     <TextView
+        style="@style/common_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/enter_password"
@@ -44,6 +48,7 @@
         android:inputType="textPassword"
         android:hint="@string/password_field"/>
     <TextView
+        style="@style/common_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/enter_confirm_password"
@@ -55,6 +60,7 @@
         android:inputType="textPassword"
         android:hint="@string/confirm_password_field"/>
     <TextView
+        style="@style/common_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/enter_phone_number"
@@ -64,6 +70,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/phone_number_field"
         android:inputType="phone"
+        android:maxLength="10"
         android:hint="@string/phone_number_field"/>
     <Spinner
         android:layout_width="wrap_content"
