@@ -21,4 +21,5 @@
         <item>Customer</item>
         <item>Worker</item>
     </string-array>
+    <string name="logout">Logout</string>
 </resources>

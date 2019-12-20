@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.models.User;
+import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -27,6 +28,7 @@ import java.util.regex.Pattern;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import io.reactivex.rxjava3.core.Observable;
 
 public class RegisterActivity extends AppCompatActivity {
     private Spinner spinner;
@@ -196,6 +198,26 @@ public class RegisterActivity extends AppCompatActivity {
         if(currentUser != null)
         { // signed in.
             // Switch to user's panel activity.
+            Observable<User> o = Firebase.getUserData(currentUser.getUid());
+            o.subscribe(new ObserverFirebaseTemplate<User>() {
+                @Override
+                public void onNext(User dbUser) {
+                    Log.i("DATA", "onNext: "+dbUser);
+
+                    Intent intent = null;
+                    switch (dbUser.getUserType()) {
+                        case Customer:
+                            intent = new Intent(getApplicationContext(), UserPanelActivity.class);
+                            break;
+                        case Worker:
+                            intent = new Intent(getApplicationContext(), WorkerPanelActivity.class);
+                            break;
+                    }
+                    startActivity(intent);
+                    finish();
+                }
+            });
+
             Intent intent = new Intent(this, UserPanelActivity.class);
             startActivity(intent);
         }

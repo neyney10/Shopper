@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.rxjava3.core.Observable;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.arielu.shopper.demo.database.Firebase;
+import com.arielu.shopper.demo.models.User;
+import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -25,11 +29,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
+
 public class LoginActivity extends AppCompatActivity  {
 
     //// Private variables - UI Views. ////
     private EditText editTextEmail, editTextPassword;
     private Button btnLogin, btnRegister;
+    private User user;
 
     //// Firebase authentication ////
     private FirebaseAuth mAuth;
@@ -70,8 +76,24 @@ public class LoginActivity extends AppCompatActivity  {
         if(currentUser != null)
         { // signed in.
             // Switch to user's panel activity.
-            Intent intent = new Intent(this, UserPanelActivity.class);
-            startActivity(intent);
+            Observable<User> o = Firebase.getUserData(currentUser.getUid());
+            o.subscribe(new ObserverFirebaseTemplate<User>() {
+                @Override
+                public void onNext(User dbUser) {
+                    Intent intent = null;
+                    switch (dbUser.getUserType()) {
+                        case Customer:
+                            intent = new Intent(getApplicationContext(), UserPanelActivity.class);
+                            break;
+                        case Worker:
+                            intent = new Intent(getApplicationContext(), WorkerPanelActivity.class);
+                            break;
+                    }
+                    startActivity(intent);
+                    finish();
+                }
+            });
+
         }
         else
         { // not signed in.

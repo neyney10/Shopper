@@ -1,6 +1,8 @@
 package com.arielu.shopper.demo.database;
 
 
+import android.util.Log;
+
 import com.arielu.shopper.demo.Item;
 import com.arielu.shopper.demo.models.Permission;
 import com.arielu.shopper.demo.classes.Product;
@@ -65,9 +67,7 @@ final public class Firebase {
     public static Observable<User> getUserData(String uID)
     {
         Observable o = firebaseDBGetRequest("users/"+uID,(dataSnapshot) -> {
-            HashMap<String,String> user_data = (HashMap<String,String>) dataSnapshot.getValue();
-            User user = new User(user_data.get("username"),user_data.get("name"));
-
+            User user = dataSnapshot.getValue(User.class);
             return user;
         });
 

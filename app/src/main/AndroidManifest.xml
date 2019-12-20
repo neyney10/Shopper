@@ -16,6 +16,7 @@
         <activity android:name=".UserShoppingListActivity" />
         <activity android:name=".ShoppingListActivity" />
         <activity android:name=".UserPanelActivity" />
+        <activity android:name=".WorkerPanelActivity"/>
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".MainActivity">
