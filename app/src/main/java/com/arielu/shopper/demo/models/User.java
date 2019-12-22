@@ -8,10 +8,15 @@ public class User {
 
     //// private variables.
     private String username,name,password,phoneNumber;
-    private enum UserType{Customer,Worker};
     private UserType userType;
+    //// public variables
+    public enum UserType{Customer,Worker};
     //// Constructors
-    public User(String username,String name){
+
+    public User() {
+    }
+
+    public User(String username, String name){
         setUsername(username);
         setName(name);
     }
@@ -19,10 +24,17 @@ public class User {
     {
         setName(name);
         setPhoneNumber(phoneNumber);
-        setUserType(userType);
+        idUserType(userType);
     }
 
-    //// Getters and Setters
+    public User(String username, String name, String password, String phoneNumber, UserType userType) {
+        this.username = username;
+        this.name = name;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.userType = userType;
+    }
+//// Getters and Setters
 
     // username
     public void setUsername(String newUsername)
@@ -66,7 +78,10 @@ public class User {
         return userType;
     }
 
-    public void setUserType(int userType) {
+    public void idUserType(int userType){
         this.userType = UserType.values()[userType];
+    }
+    public void setUserType(String userType) {
+        this.userType = UserType.valueOf(userType);
     }
 }

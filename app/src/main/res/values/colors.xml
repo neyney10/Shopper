@@ -5,4 +5,8 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorShopperLogo">#015F87</color>
     <color name="colorSectionListTitle">#99ccff</color>
+    <color name="pantone">#ED2939</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="red">#FF0000</color>
 </resources>

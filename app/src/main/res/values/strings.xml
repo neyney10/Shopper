@@ -26,5 +26,5 @@
         <item>BBQ</item>
         <item>Home2</item>
     </array>
-
+    <string name="logout">Logout</string>
 </resources>
