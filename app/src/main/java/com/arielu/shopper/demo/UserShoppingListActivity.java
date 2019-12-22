@@ -117,7 +117,7 @@ public class UserShoppingListActivity extends AppCompatActivity {
         Collection<ArrayList<Product>> c = list.values();
         ArrayList<Product> lst = new ArrayList<>();
         for(ArrayList<Product> l : c ) { lst.addAll(l); }
-        Firebase.setListProducts("0",lst);
+        Firebase.setListProducts(listID,lst);
 
         Toast.makeText(this,"Saving your list...",Toast.LENGTH_SHORT);
     }

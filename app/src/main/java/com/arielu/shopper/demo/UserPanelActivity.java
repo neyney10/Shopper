@@ -9,13 +9,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.models.Product;
@@ -36,6 +40,10 @@ public class UserPanelActivity extends AppCompatActivity {
 
     //// Firebase authentication ////
     private FirebaseAuth mAuth;
+    EditText editTextName ;
+    Spinner list ;
+    Button addList ;
+
 
 
     @Override
@@ -45,6 +53,8 @@ public class UserPanelActivity extends AppCompatActivity {
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+
+
 
         //
         TextView txt_name = findViewById(R.id.txt_name);
@@ -88,6 +98,8 @@ public class UserPanelActivity extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     public void signOutClick(View view)
@@ -106,9 +118,11 @@ public class UserPanelActivity extends AppCompatActivity {
 
     public void onListBtnClick(View view)
     {
-        Intent intent = new Intent(this, UserShoppingListActivity.class);
-        intent.putExtra("listID","0");
-        intent.putExtra("listName","My LiSt!");
+        //Intent intent = new Intent(this, UserShoppingListActivity.class);
+        Intent intent = new Intent(this, ChooseListActivity.class);
+
+//        intent.putExtra("listID","0");
+//        intent.putExtra("listName","My LiSt!");
         startActivity(intent);
     }
 }

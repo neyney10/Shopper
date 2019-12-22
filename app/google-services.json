@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "102585912131-j7cffjo527764r411vkiimgg9jp024np.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.arielu.shopper.demo",
+            "certificate_hash": "64b54dc0af7b2b32a22a5b17a7651dcba3cc9acf"
+          }
+        },
+        {
           "client_id": "102585912131-9h5ui4m3mki1rbqjp16hjuvk64ptgq8p.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
