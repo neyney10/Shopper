@@ -22,4 +22,5 @@
         <item>Worker</item>
     </string-array>
     <string name="logout">Logout</string>
+    <string name="message">Message</string>
 </resources>

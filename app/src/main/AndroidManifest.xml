@@ -11,12 +11,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ShoppingListPermissionsActivity"></activity>
+        <activity android:name=".ShoppingListPermissionsActivity"/>
         <activity android:name=".SearchItemsActivity" />
         <activity android:name=".UserShoppingListActivity" />
         <activity android:name=".ShoppingListActivity" />
         <activity android:name=".UserPanelActivity" />
         <activity android:name=".WorkerPanelActivity"/>
+        <activity android:name=".MessageBoardActivity"/>
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".MainActivity">

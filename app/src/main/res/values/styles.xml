@@ -21,6 +21,10 @@
     <style name="btnstyle">
 
     </style>
+    <style name="button_for_login">
+        <item name="android:background">@drawable/button_drawable</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
     <style name="register_input_field">
         <item name="android:background">@drawable/input_theme</item>
         <item name="android:paddingLeft">5dp</item>

@@ -32,10 +32,9 @@
 
     <Button
         android:id="@+id/login"
-        style="@style/btnstyle"
+        style="@style/button_for_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorShopperLogo"
         android:onClick="LogInClick"
         android:text="@string/login"
         android:textStyle="bold" />

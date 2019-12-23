@@ -6,11 +6,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 
 public class WorkerPanelActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -56,5 +58,9 @@ public class WorkerPanelActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
+    }
+    public void goToMessages(View v){
+        Intent intent = new Intent(this, MessageBoardActivity.class);
+        startActivity(intent);
     }
 }
