@@ -4,6 +4,7 @@ package com.arielu.shopper.demo.database;
 import android.util.Log;
 
 import com.arielu.shopper.demo.Item;
+import com.arielu.shopper.demo.classes.Shopping_list;
 import com.arielu.shopper.demo.models.Permission;
 import com.arielu.shopper.demo.classes.Product;
 import com.arielu.shopper.demo.models.User;
@@ -32,6 +33,18 @@ final public class Firebase {
 
          return o;
 
+    }
+
+    public static Observable<List<Shopping_list>> getUserLists(String uID)
+    {
+        Observable o = firebaseDBGetRequest("user_shopping_lists/"+uID,(dataSnapshot) -> {
+            GenericTypeIndicator<List<Shopping_list>> genericTypeIndicator = new GenericTypeIndicator<List<Shopping_list>>() {};
+            List<Shopping_list> lists = dataSnapshot.getValue(genericTypeIndicator);
+
+            return lists;
+        });
+
+        return o;
     }
 
     public static Observable<List<Product>> getListItems(String listID)
@@ -106,4 +119,7 @@ final public class Firebase {
         return o;
     }
 
+/*AVIHU*/
+    // Add new list to database
+    //public static
 }

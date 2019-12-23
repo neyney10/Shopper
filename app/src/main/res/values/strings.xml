@@ -21,6 +21,11 @@
         <item>Customer</item>
         <item>Worker</item>
     </string-array>
+    <array name="list">
+        <item>Home</item>
+        <item>BBQ</item>
+        <item>Home2</item>
+    </array>
     <string name="logout">Logout</string>
     <string name="message">Message</string>
 </resources>
