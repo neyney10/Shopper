@@ -21,6 +21,7 @@
         <activity android:name=".MessageBoardActivity"/>
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity"/>
+        <activity android:name=".AddListAtivity"/>
         <activity android:name=".MainActivity">
 
             <intent-filter>

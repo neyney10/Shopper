@@ -45,7 +45,6 @@ public class UserPanelActivity extends AppCompatActivity {
     Button addList ;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +62,7 @@ public class UserPanelActivity extends AppCompatActivity {
         o.subscribe(new ObserverFirebaseTemplate<User>() {
             @Override
             public void onNext(User user) {
-                txt_name.setText(user.getName() + " (" + user.getUsername() + ")");
+                txt_name.setText( "Hello " + user.getName() /*+ " (" + user.getUsername() + ")"*/);
                 txt_name.setTextColor(Color.BLACK);
             }
         });

@@ -64,3 +64,4 @@ public class WorkerPanelActivity extends AppCompatActivity {
         startActivity(intent);
     }
 }
+

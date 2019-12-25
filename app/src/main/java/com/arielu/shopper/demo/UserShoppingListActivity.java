@@ -106,11 +106,13 @@ public class UserShoppingListActivity extends AppCompatActivity {
 
     }
 
+
     public void btn_searchitemsClick(View view)
     {
         Intent intent = new Intent(this, SearchItemsActivity.class);
         startActivityForResult(intent,1);
     }
+
 
     public void btn_saveClick(View view)
     {
@@ -119,8 +121,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
         for(ArrayList<Product> l : c ) { lst.addAll(l); }
         Firebase.setListProducts(listID,lst);
 
-        Toast.makeText(this,"Saving your list...",Toast.LENGTH_SHORT);
+        Toast.makeText(UserShoppingListActivity.this,"Saving your list...",Toast.LENGTH_SHORT);
     }
+
 
     public void btn_permissionsClick(View view)
     {
@@ -165,3 +168,7 @@ public class UserShoppingListActivity extends AppCompatActivity {
         }
     }//onActivityResult
 }
+
+
+
+   

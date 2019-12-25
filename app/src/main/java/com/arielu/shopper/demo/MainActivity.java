@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
     {
         System.exit(0);
     }
-
     public void continueClick(View view)
     {
         Intent intent = new Intent(this, LoginActivity.class);

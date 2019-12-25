@@ -1,29 +1,26 @@
 package com.arielu.shopper.demo;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.arielu.shopper.demo.classes.Shopping_list;
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +42,7 @@ public class ChooseListActivity extends AppCompatActivity
         setContentView(R.layout.activity_choose_list);
 
         listview = (ListView) findViewById(R.id.lists) ;
-        addList = (Button) findViewById((R.id.addList) );
+        addList = (Button) findViewById((R.id.addListButton) );
 
         shopping_Lists = new ArrayList<Shopping_list>() ;
         mAuth = FirebaseAuth.getInstance();
@@ -80,19 +77,28 @@ public class ChooseListActivity extends AppCompatActivity
         });
 
 
-//        //NOT READY!!!!! - problem: how to retrieve user id ??
-//        //add new list to database
-//        addList.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
+        //NOT READY!!!!! - problem: how to retrieve user id ??
+        //add new list to database
+        addList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 //                String id = dataBaseLists.push().getKey() ;
 //                Shopping_list list = new Shopping_list( id , id , " s") ;
 //                dataBaseLists.child(String.valueOf(id)).setValue(list);
 //                Toast.makeText(ChooseListActivity.this , "clicked" , Toast.LENGTH_LONG).show();
-//            }
-//
-//
-//        });
+
+//                Intent intent = new Intent(ChooseListActivity.this, AddListAtivity.class);
+//                startActivity(intent);
+
+                DialogFragment newFragment = new DialogAddList();
+                newFragment.show(getSupportFragmentManager(), "Add List");
+
+
+            }
+
+
+        });
     }
+
 
 }

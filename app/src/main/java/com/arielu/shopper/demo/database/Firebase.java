@@ -51,9 +51,16 @@ final public class Firebase {
     {
         Observable o = firebaseDBGetRequest("shopping_list_items/"+listID,(dataSnapshot) -> {
             GenericTypeIndicator<List<Product>> genericTypeIndicator = new GenericTypeIndicator<List<Product>>() {};
-            List<Product> items_data = dataSnapshot.getValue(genericTypeIndicator);
+            try{
+                List<Product> items_data = dataSnapshot.getValue(genericTypeIndicator);
+                return items_data;
+            }
+            catch (Exception e)
+            {
+                return new ArrayList<Product>();
+            }
 
-            return items_data;
+
 
         });
 

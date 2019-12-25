@@ -70,7 +70,6 @@ public class LoginActivity extends AppCompatActivity  {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUserUI(currentUser);
     }
-
     private void updateUserUI(FirebaseUser currentUser) {
         // if not connected then "currentUser" is equal to null
         if(currentUser != null)
@@ -166,6 +165,9 @@ public class LoginActivity extends AppCompatActivity  {
      * Register the user using editTextEmail and editTextPassword to the service.
      * @param view
      */
+
+
+
     public void RegisterClick(View view)
     {
         // create a new account in firebase

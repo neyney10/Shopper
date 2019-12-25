@@ -52,7 +52,8 @@ public class ShoppingListActivity extends AppCompatActivity {
         ELV.setAdapter(ELA);
         ELV.expandGroup(0);
     }
-    public void myCart(View view) {
+
+        public void myCart(View view) {
         Toast toast = Toast.makeText(getApplicationContext(), "worked", Toast.LENGTH_SHORT);
         toast.show();
 
