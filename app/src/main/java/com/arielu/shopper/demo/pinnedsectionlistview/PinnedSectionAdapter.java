@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat;
 public class PinnedSectionAdapter extends BaseExpandableListAdapter implements PinnedSectionListView.PinnedSection, AbsListView.OnScrollListener, Filterable {
     private Context context;
     private ArrayList<String> displayTitles;
+    public TreeMap<Integer,List<Integer>> selectedItems;
     private TreeMap<String,ArrayList<Product>> displayData,data;
     private final int blue,white;
 
@@ -92,7 +93,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
         }
         Product curr = displayData.get(displayTitles.get(i)).get(i1);
         ((TextView) view.findViewById(R.id.item_name)).setText(curr.getItemName());
-        if (curr.isItemSelected())
+        if (selectedItems.get(i).contains(i1))
             view.setBackgroundColor(blue);
         else
             view.setBackgroundColor(white);
@@ -120,12 +121,12 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
         // TODO Auto-generated method stub
 
     }
-    public void remove(HashMap<Integer, List<Integer>> items){
-        for (int group:items.keySet()) {
+    public void remove(){
+        for (int group:selectedItems.keySet()) {
             String currGroup = displayTitles.get(group);
             ArrayList list = displayData.get(currGroup);
-            Collections.sort(items.get(group),Collections.<Integer>reverseOrder());
-            for (int child:items.get(group)) {
+            Collections.sort(selectedItems.get(group),Collections.<Integer>reverseOrder());
+            for (int child:selectedItems.get(group)) {
                 if (list.size() == 1)
                     displayData.remove(currGroup);
                 else

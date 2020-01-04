@@ -10,7 +10,6 @@ public class Product implements Serializable {
     private String itemName;
     private String itemPrice;
     private String itemType;
-    private boolean itemSelected;
     private String manufacturerName;
     private String qtyInPackage;
 
@@ -35,13 +34,6 @@ public class Product implements Serializable {
     public String getItemType()
     {
         return itemType;
-    }
-    public boolean isItemSelected() {
-        return itemSelected;
-    }
-    //Setter
-    public void setItemSelected(boolean itemSelected) {
-        this.itemSelected = itemSelected;
     }
 
     @NonNull
