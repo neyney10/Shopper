@@ -27,7 +27,7 @@ public class Product implements Serializable {
 
         return prod;
     }
-
+    //Getter
     public String getItemName()
     {
         return itemName;
