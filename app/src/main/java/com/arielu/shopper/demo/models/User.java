@@ -1,15 +1,17 @@
 package com.arielu.shopper.demo.models;
 
+import java.io.Serializable;
+
 /**
  * User class for describing a user entity with Login details and
  * User's data in the system.
  */
-public class User {
+public class User implements Serializable {
 
     //// private variables.
-    private String username,name,password,phoneNumber;
+    private String username,name,password,phoneNumber,companybranchID,SessionListID;
     private UserType userType;
-    //// public variables
+    //// public enum
     public enum UserType{Customer,Worker};
     //// Constructors
 
@@ -83,5 +85,21 @@ public class User {
     }
     public void setUserType(String userType) {
         this.userType = UserType.valueOf(userType);
+    }
+
+    public String getCompanybranchID() {
+        return companybranchID;
+    }
+
+    public void setCompanybranchID(String companybranchID) {
+        this.companybranchID = companybranchID;
+    }
+
+    public String getSessionListID() {
+        return SessionListID;
+    }
+
+    public void setSessionListID(String sessionListID) {
+        SessionListID = sessionListID;
     }
 }

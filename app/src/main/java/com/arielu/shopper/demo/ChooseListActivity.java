@@ -17,6 +17,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.arielu.shopper.demo.classes.Shopping_list;
 import com.arielu.shopper.demo.database.Firebase;
+import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +48,7 @@ public class ChooseListActivity extends AppCompatActivity
         shopping_Lists = new ArrayList<Shopping_list>() ;
         mAuth = FirebaseAuth.getInstance();
 
+        /* deprecated
         Observable<List<Shopping_list>> o =  Firebase.getUserLists(mAuth.getCurrentUser().getUid());
         o.subscribe(new ObserverFirebaseTemplate<List<Shopping_list>>() {
             @Override
@@ -55,6 +57,14 @@ public class ChooseListActivity extends AppCompatActivity
                 shopping_Lists.addAll(lists);
                 arrayAdapter.notifyDataSetChanged();
             }
+        });
+         */
+
+        Firebase2.getUserLists(mAuth.getCurrentUser().getUid(),(lists) -> {
+
+            shopping_Lists.clear();
+            shopping_Lists.addAll((List<Shopping_list>)lists);
+            arrayAdapter.notifyDataSetChanged();
         });
 
 

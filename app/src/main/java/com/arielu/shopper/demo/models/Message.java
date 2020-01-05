@@ -3,6 +3,9 @@ package com.arielu.shopper.demo.models;
 public class Message {
     private String title,content,date;
 
+    //for firebase
+    private Message(){}
+
     public Message(String title, String content, String date) {
         this.title = title;
         this.content = content;

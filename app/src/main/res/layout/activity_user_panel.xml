@@ -7,9 +7,9 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@drawable/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/background"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="482dp">
@@ -106,7 +106,7 @@
             app:layout_constraintVertical_bias="0.156" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tv_list_total_price"
             android:layout_width="167dp"
             android:layout_height="31dp"
             android:paddingLeft="70dp"
@@ -114,10 +114,10 @@
             android:textSize="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageView5"
-            app:layout_constraintHorizontal_bias="0.586"
+            app:layout_constraintHorizontal_bias="0.543"
             app:layout_constraintStart_toEndOf="@+id/imageView6"
             app:layout_constraintTop_toBottomOf="@+id/textView5"
-            app:layout_constraintVertical_bias="0.028" />
+            app:layout_constraintVertical_bias="0.005" />
 
         <TextView
             android:id="@+id/textView"
@@ -172,6 +172,20 @@
             app:layout_constraintVertical_bias="0.343"
             app:srcCompat="@drawable/shopping_cart_icon" />
 
+        <Button
+            android:id="@+id/btn_test"
+            android:layout_width="87dp"
+            android:layout_height="60dp"
+            android:background="#3F51B5"
+            android:onClick="btn_testClick"
+            android:text="Button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/favorite_star"
+            app:layout_constraintHorizontal_bias="0.429"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
+            app:layout_constraintVertical_bias="0.359" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    </RelativeLayout>
+</RelativeLayout>

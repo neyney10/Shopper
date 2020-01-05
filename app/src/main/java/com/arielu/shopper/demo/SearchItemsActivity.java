@@ -6,20 +6,15 @@ import io.reactivex.rxjava3.core.Observable;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 
-import com.arielu.shopper.demo.classes.ImageDownloader;
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.classes.Product;
+import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 
 import java.util.ArrayList;
@@ -52,6 +47,7 @@ public class SearchItemsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        /* DEPRECATED
         Observable<List<Product>> o = Firebase.getProductList();
         o.subscribe(new ObserverFirebaseTemplate<List<Product>>() {
             @Override
@@ -59,6 +55,12 @@ public class SearchItemsActivity extends AppCompatActivity {
                 products = prods;
             }
         });
+        */
+
+        Firebase2.getProductList((prods)->{
+            products = (List<Product>) prods;
+        });
+
     }
 
     protected void LinkUI()

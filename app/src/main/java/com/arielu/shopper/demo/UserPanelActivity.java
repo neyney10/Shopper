@@ -1,40 +1,26 @@
 package com.arielu.shopper.demo;
 
-import androidx.appcompat.app.AppCompatActivity;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.arielu.shopper.demo.database.Firebase;
-import com.arielu.shopper.demo.models.Product;
+import com.arielu.shopper.demo.database.Firebase2;
+import com.arielu.shopper.demo.models.SessionProduct;
 import com.arielu.shopper.demo.models.User;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.rxjava3.core.Observable;
 
 public class UserPanelActivity extends AppCompatActivity {
 
@@ -54,7 +40,6 @@ public class UserPanelActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
 
-
         //
         TextView txt_name = findViewById(R.id.txt_name);
         txt_name.setTextColor(Color.rgb(211,211,211));
@@ -67,39 +52,26 @@ public class UserPanelActivity extends AppCompatActivity {
             }
         });
 
-    }
+        //
+        Firebase2.getUserListinSession(mAuth.getCurrentUser().getUid(), (data) -> {
+            Log.d("firebase_session_lists", data.toString());
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+            List<String> sessLists = (List<String>) data;
+            if(sessLists.size() > 0 )
+            {
+                Firebase2.getListItems(sessLists.get(0), (data2) -> {
+                    List<SessionProduct> sessProducts = (List<SessionProduct>) data2;
+                    double sum = 0;
+                    for(SessionProduct sp : sessProducts)
+                        sum += sp.getProductPrice();
 
-        test();
-
-    }
-
-    public void test() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("test/root/Items/Item");
-
-        Query query = reference.orderByChild("ItemPrice").equalTo("6.40");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // dataSnapshot is the "issue" node with all children with id 0
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        // do something with the individual "issues"
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+                    ((TextView)findViewById(R.id.tv_list_total_price)).setText(Double.toString(sum)+"₪");
+                });
             }
         });
-
-
     }
+
+
 
     public void signOutClick(View view)
     {
@@ -110,6 +82,7 @@ public class UserPanelActivity extends AppCompatActivity {
             mAuth.signOut();
 
             // switch activity to login form.
+            finish();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
@@ -117,11 +90,13 @@ public class UserPanelActivity extends AppCompatActivity {
 
     public void onListBtnClick(View view)
     {
-        //Intent intent = new Intent(this, UserShoppingListActivity.class);
         Intent intent = new Intent(this, ChooseListActivity.class);
+        startActivity(intent);
+    }
 
-//        intent.putExtra("listID","0");
-//        intent.putExtra("listName","My LiSt!");
+    public void btn_testClick(View view)
+    {
+        Intent intent = new Intent(this, MessageBoardActivity.class);
         startActivity(intent);
     }
 }
