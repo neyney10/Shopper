@@ -1,6 +1,9 @@
 package com.arielu.shopper.demo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -10,9 +13,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.se.omapi.Session;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
@@ -25,6 +34,8 @@ import com.arielu.shopper.demo.models.StoreProductRef;
 import com.arielu.shopper.demo.utilities.ImageDownloader;
 import com.arielu.shopper.demo.classes.Product;
 import com.arielu.shopper.demo.database.Firebase;
+import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionAdapter;
+import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.core.utilities.Tree;
@@ -38,8 +49,13 @@ import java.util.TreeMap;
 public class UserShoppingListActivity extends AppCompatActivity {
 
     private TreeMap<String, ArrayList<SessionProduct>> list = new TreeMap<>();
-    private ExpandableListView ELV;
-    private BaseExpandableListAdapter ELA;
+
+    private Toolbar toolbar;
+    private SearchView searchView;
+    private PinnedSectionAdapter pinnedSectionAdapter;
+    private PinnedSectionListView pinnedSectionListView;
+    private boolean isSelectOn;
+    private int blue,white;
 
     private String listID;
     private String listName;
@@ -51,7 +67,6 @@ public class UserShoppingListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_shopping_list);
-
         // need a policy to allow downloading / accessing images from the network
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                 .permitAll().build();
@@ -59,16 +74,65 @@ public class UserShoppingListActivity extends AppCompatActivity {
 
         this.listID = getIntent().getStringExtra("listID");
         this.listName = getIntent().getStringExtra("listName");
+        //my edit
+        blue = ContextCompat.getColor(getApplicationContext(),R.color.blue);
+        white = ContextCompat.getColor(getApplicationContext(), R.color.white);
+        //toolbar
+        toolbar = findViewById(R.id.user_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(listName);
+        //Filter
+        searchView = findViewById(R.id.list_filter);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                return true;
+            }
 
-        TextView tv_listname = findViewById(R.id.tv_listname);
-        tv_listname.setText(this.listName);
-
-
-        ELV = findViewById(R.id.user_list);
-        ELA = new ListAdapter2(this,list);
-        ELV.setAdapter(ELA);
-
-
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                UserShoppingListActivity.this.pinnedSectionAdapter.getFilter().filter(newText);
+                expandAll();
+                return false;
+            }
+        });
+        //PinnedSectionListView
+        pinnedSectionAdapter = new PinnedSectionAdapter(this,list);
+        pinnedSectionListView = findViewById(R.id.user_list);
+        pinnedSectionListView.setAdapter(pinnedSectionAdapter);
+        pinnedSectionListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(pinnedSectionListView.getPackedPositionType(l)== PinnedSectionListView.PACKED_POSITION_TYPE_CHILD){
+                    int group = pinnedSectionListView.getPackedPositionGroup(l);
+                    int child = pinnedSectionListView.getPackedPositionChild(l);
+                    //TODO function set select mode for delete,new list,sum of selected items,etc...
+                    selectMode(true);
+                    view.setBackgroundColor(blue);
+                    ((PinnedSectionAdapter)((PinnedSectionListView)adapterView).getExpandableListAdapter()).select(group,child);
+                }
+                return true;
+            }
+        });
+        pinnedSectionListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
+                if (isSelectOn){
+                    if (((PinnedSectionAdapter)expandableListView.getExpandableListAdapter()).select(i,i1))
+                        view.setBackgroundColor(blue);
+                    else
+                        view.setBackgroundColor(white);
+                    if (pinnedSectionAdapter.selectedItems.isEmpty())
+                        selectMode(false);
+                }else {
+                    Product product = (Product) expandableListView.getExpandableListAdapter().getChild(i, i1);
+                }
+                return true;
+            }
+        });
+        pinnedSectionListView.setPinnedSections(R.layout.list_group);
+        //get data
         Firebase2.getListItems(this.listID, (data) -> {
             List<SessionProduct> products = (List<SessionProduct>) data;
             ArrayList<SessionProduct> temp;
@@ -88,22 +152,71 @@ public class UserShoppingListActivity extends AppCompatActivity {
                 list.put(p.getCategoryName(),temp);
             }
 
-            ELA.notifyDataSetChanged();
+            pinnedSectionAdapter.notifyDataSetChanged();
             expandAll();
 
         });
+    }
+//new
 
-
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (isSelectOn)
+            getMenuInflater().inflate(R.menu.select_mode_menu,menu);
+        else
+            getMenuInflater().inflate(R.menu.user_list_menu,menu);
+        return super.onPrepareOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.add_item:
+                btn_searchitemsClick();
+                return true;
+            case R.id.save_list:
+                btn_saveClick();
+                return true;
+            case R.id.branch:
+                btn_searchBranchesClick();
+                return true;
+            case R.id.user_permission:
+                btn_permissionsClick();
+                return true;
+            case R.id.delete:
+                pinnedSectionAdapter.remove();
+                selectMode(false);
+                return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+        }
+    }
+    private void selectMode(boolean state){
+        isSelectOn=state;
+        invalidateOptionsMenu();
+        pinnedSectionAdapter.notifyDataSetChanged();
+    }
     private void expandAll()
     {
         for(int i = 0; i < list.size();i++)
         {
-            ELV.expandGroup(i);
+            pinnedSectionListView.expandGroup(i);
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isSelectOn) {
+            pinnedSectionAdapter.selectedItems.clear();
+            selectMode(false);
+        }else
+        super.onBackPressed();
+    }
+
+    public void myCart(View view) {
+        Toast toast = Toast.makeText(getApplicationContext(), "worked", Toast.LENGTH_SHORT);
+        toast.show();
+    }
     private void getProductsPrice(Branch branch)
     {
         // create a subject (observable/observer) that notifies when a product retrieved from Firebase.
@@ -123,8 +236,7 @@ public class UserShoppingListActivity extends AppCompatActivity {
             }
 
             prod.setProductPrice(storeProductRef.getPrice());
-
-            ELA.notifyDataSetChanged();
+            pinnedSectionAdapter.notifyDataSetChanged();
         });
 
         List<SessionProduct> products = convertProductsMapToList(this.list);
@@ -133,6 +245,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
             Firebase.getStoreProductByCode(p.getProductCode(),branch.getCompany_id()+"-"+branch.getBranch_id(), storeProdRefSubject);
 
     }
+
+
+
 
     private List<SessionProduct> convertProductsMapToList(Map<String, ArrayList<SessionProduct>> productsMap)
     {
@@ -144,20 +259,20 @@ public class UserShoppingListActivity extends AppCompatActivity {
     }
 
 
-    public void btn_searchitemsClick(View view)
+    public void btn_searchitemsClick()
     {
         Intent intent = new Intent(this, SearchItemsActivity.class);
         startActivityForResult(intent,1);
     }
 
-    public void btn_searchBranchesClick(View view)
+    public void btn_searchBranchesClick()
     {
         Intent intent = new Intent(this, BranchesActivity.class);
         startActivityForResult(intent,2);
     }
 
 
-    public void btn_saveClick(View view)
+    public void btn_saveClick()
     {
         List<SessionProduct> lst = convertProductsMapToList(list);
         Firebase2.setListProducts(listID,lst);
@@ -166,7 +281,7 @@ public class UserShoppingListActivity extends AppCompatActivity {
     }
 
 
-    public void btn_permissionsClick(View view)
+    public void btn_permissionsClick()
     {
         // TODO
         // intent -> change activity to ChangePermissionListActivity
@@ -182,7 +297,6 @@ public class UserShoppingListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         switch (requestCode) {
             case 1:
                 if(resultCode == Activity.RESULT_OK){
@@ -199,7 +313,6 @@ public class UserShoppingListActivity extends AppCompatActivity {
                     if(isCategoryExistInView) {
                         temp = new ArrayList<>();
                         list.put(result.getCategoryName(), temp);
-
                     } else {
                         temp = list.get(result.getCategoryName());
                     }
@@ -209,13 +322,13 @@ public class UserShoppingListActivity extends AppCompatActivity {
                         temp.add(sessProd);
 
                     // notify adapter that changes were made to the dataset.
-                    ELA.notifyDataSetChanged();
+                    pinnedSectionAdapter.notifyDataSetChanged();
+
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     //Write your code if there's no result
                 }
                 break;
-                ///////////////////////////////////////////////
             case 2:
                 if(resultCode == Activity.RESULT_OK) {
                     selectedBranch = (Branch) data.getSerializableExtra("result");
@@ -229,10 +342,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
                     //Write your code if there's no result
                 }
                 break;
-                ///////////////////////////////////////////////
         }
+    }
     }//onActivityResult
-}
 
 
 
