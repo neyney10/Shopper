@@ -152,18 +152,11 @@ public class UserShoppingListActivity extends AppCompatActivity {
             }
 
             pinnedSectionAdapter.notifyDataSetChanged();
-            Log.i("TEST", "onCreate: "+pinnedSectionAdapter.getGroupCount());
             expandAll();
 
         });
     }
 //new
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-
-    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -242,7 +235,6 @@ public class UserShoppingListActivity extends AppCompatActivity {
             }
 
             prod.setProductPrice(storeProductRef.getPrice());
-
             pinnedSectionAdapter.notifyDataSetChanged();
         });
 
@@ -252,6 +244,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
             Firebase.getStoreProductByCode(p.getProductCode(),branch.getCompany_id()+"-"+branch.getBranch_id(), storeProdRefSubject);
 
     }
+
+
+
 
     private List<SessionProduct> convertProductsMapToList(Map<String, ArrayList<SessionProduct>> productsMap)
     {
@@ -317,7 +312,6 @@ public class UserShoppingListActivity extends AppCompatActivity {
                     if(isCategoryExistInView) {
                         temp = new ArrayList<>();
                         list.put(result.getCategoryName(), temp);
-
                     } else {
                         temp = list.get(result.getCategoryName());
                     }
@@ -328,12 +322,12 @@ public class UserShoppingListActivity extends AppCompatActivity {
 
                     // notify adapter that changes were made to the dataset.
                     pinnedSectionAdapter.notifyDataSetChanged();
+
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     //Write your code if there's no result
                 }
                 break;
-            ///////////////////////////////////////////////
             case 2:
                 if(resultCode == Activity.RESULT_OK) {
                     selectedBranch = (Branch) data.getSerializableExtra("result");
@@ -343,7 +337,6 @@ public class UserShoppingListActivity extends AppCompatActivity {
                     //Write your code if there's no result
                 }
                 break;
-            ///////////////////////////////////////////////
         }
     }
     }//onActivityResult
