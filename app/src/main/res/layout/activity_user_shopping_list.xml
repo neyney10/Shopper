@@ -28,9 +28,8 @@
             android:layout_height="wrap_content"
             android:background="@color/white" />
 
-        <view
+        <view class="com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView"
             android:id="@+id/user_list"
-            class="com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
@@ -47,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="1.2">
+            android:weightSum="1.55">
 
             <Button
                 android:id="@+id/btn_searchitems"
@@ -64,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
-                android:minWidth="205dp"
+                android:minWidth="180dp"
                 android:minHeight="48dp"
                 android:orientation="horizontal">
 
@@ -76,8 +75,20 @@
                     android:layout_margin="2dp"
                     android:layout_weight="1"
                     android:text="[List Name Here]"
-                    android:textSize="28dp" />
+                    android:textSize="20dp" />
+
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_searchBranches"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="0.35"
+                android:background="@drawable/round_shopping_cart_24"
+                android:backgroundTint="@color/design_default_color_primary_dark"
+                android:onClick="btn_searchBranchesClick" />
 
             <Button
                 android:id="@+id/btn_permissions"
@@ -94,7 +105,7 @@
                 android:id="@+id/btn_save"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
-                android:layout_height="31dp"
+                android:layout_height="match_parent"
                 android:layout_margin="2dp"
                 android:layout_weight="0.35"
                 android:background="@android:drawable/ic_menu_save"

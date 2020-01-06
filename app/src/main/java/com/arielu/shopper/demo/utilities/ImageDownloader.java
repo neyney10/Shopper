@@ -1,4 +1,4 @@
-package com.arielu.shopper.demo.classes;
+package com.arielu.shopper.demo.utilities;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

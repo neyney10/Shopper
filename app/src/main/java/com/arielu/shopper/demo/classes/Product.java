@@ -9,13 +9,13 @@ import androidx.annotation.Nullable;
 
 public class Product implements Serializable
 {
-    private String productCode ;
-    private String categoryName ;
-    private String productName ;
-    private Double productPrice ;
-    private String productImageUrl ;
-    private String productManufacturer ;
-    private Bitmap productImage;
+    protected String productCode ;
+    protected String categoryName ;
+    protected String productName ;
+    protected Double productPrice ;
+    protected String productImageUrl ;
+    protected String productManufacturer ;
+    protected Bitmap productImage;
 
     // firebase needs empty constructor
     public Product() { }
@@ -28,6 +28,18 @@ public class Product implements Serializable
         setProductPrice(productPrice);
         setProductImageUrl(productImageUrl);
         setProductManufacturer(productManufacturer);
+    }
+
+    public Product(Product other)
+    {
+        setProductCode(other.getProductCode());
+        setCategoryName(other.getCategoryName());
+        setProductName(other.getProductName());
+        setProductPrice(other.getProductPrice());
+        setProductImageUrl(other.getProductImageUrl());
+        setProductManufacturer(getProductManufacturer());
+        productImage = Bitmap.createBitmap(other.ProductImage());
+
     }
 
     public Bundle toBundle()

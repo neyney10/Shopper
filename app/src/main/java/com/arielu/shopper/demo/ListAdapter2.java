@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.arielu.shopper.demo.classes.Product;
+import com.arielu.shopper.demo.models.SessionProduct;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,9 @@ import java.util.TreeSet;
 
 public class ListAdapter2 extends BaseExpandableListAdapter {
     private Context context;
-    private TreeMap<String,ArrayList<Product>> list;
+    private TreeMap<String,ArrayList<SessionProduct>> list;
 
-    public ListAdapter2(Context context,TreeMap<String, ArrayList<Product>> list) {
+    public ListAdapter2(Context context,TreeMap<String, ArrayList<SessionProduct>> list) {
         this.context = context;
         this.list = list;
     }

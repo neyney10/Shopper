@@ -2,12 +2,14 @@ package com.arielu.shopper.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.arielu.shopper.demo.database.Firebase2;
 import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,6 +57,7 @@ public class WorkerPanelActivity extends AppCompatActivity {
             mAuth.signOut();
 
             // switch activity to login form.
+            finish();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
@@ -63,5 +66,7 @@ public class WorkerPanelActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MessageBoardActivity.class);
         startActivity(intent);
     }
+
+
 }
 

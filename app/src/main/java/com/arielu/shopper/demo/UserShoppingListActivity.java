@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,34 +18,36 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.se.omapi.Session;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arielu.shopper.demo.classes.ImageDownloader;
+import com.arielu.shopper.demo.classes.Branch;
+import com.arielu.shopper.demo.database.Firebase2;
+import com.arielu.shopper.demo.models.SessionProduct;
+import com.arielu.shopper.demo.models.StoreProductRef;
+import com.arielu.shopper.demo.utilities.ImageDownloader;
 import com.arielu.shopper.demo.classes.Product;
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionAdapter;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
+import com.google.firebase.database.core.utilities.Tree;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class UserShoppingListActivity extends AppCompatActivity {
 
-    private TreeMap<String, ArrayList<Product>> list = new TreeMap<>();
-    private ExpandableListView ELV;
-    private BaseExpandableListAdapter ELA;
+    private TreeMap<String, ArrayList<SessionProduct>> list = new TreeMap<>();
 
     private Toolbar toolbar;
     private SearchView searchView;
@@ -55,6 +58,8 @@ public class UserShoppingListActivity extends AppCompatActivity {
 
     private String listID;
     private String listName;
+
+    private Branch selectedBranch;
 
 
     @Override
@@ -127,72 +132,37 @@ public class UserShoppingListActivity extends AppCompatActivity {
         });
         pinnedSectionListView.setPinnedSections(R.layout.list_group);
         //get data
-        Observable o = Firebase.getListItems(this.listID);
-        o.subscribe(new ObserverFirebaseTemplate<List<Product>>() {
-            @Override
-            public void onNext(List<Product> products) {
-                ArrayList<Product> temp;
-                for(Product p : products)
-                {
-                    // get image
-                    p.setProductImage(ImageDownloader.getBitmapFromURL(p.getProductImageUrl()));
+        Firebase2.getListItems(this.listID, (data) -> {
+            List<SessionProduct> products = (List<SessionProduct>) data;
+            ArrayList<SessionProduct> temp;
+            for(SessionProduct p : products)
+            {
+                // get image
+                p.setProductImage(ImageDownloader.getBitmapFromURL(p.getProductImageUrl()));
 
-                    if(list.get(p.getCategoryName()) == null) {
-                        temp = new ArrayList<>();
+                if(list.get(p.getCategoryName()) == null) {
+                    temp = new ArrayList<>();
 
-                    } else {
-                        temp = list.get(p.getCategoryName());
-                    }
-
-                    temp.add(p);
-                    list.put(p.getCategoryName(),temp);
-                }
-                pinnedSectionAdapter.updateList();
-                expandAll();
-            }
-        });
-/*
-        TextView tv_listname = findViewById(R.id.tv_listname);
-        tv_listname.setText(this.listName);
-
-
-        ELV = findViewById(R.id.user_list);
-        ELA = new ListAdapter2(this,list);
-        ELV.setAdapter(ELA);
-
-
-        Observable o = Firebase.getListItems(this.listID);
-        o.subscribe(new ObserverFirebaseTemplate<List<Product>>() {
-            @Override
-            public void onNext(List<Product> products) {
-                ArrayList<Product> temp;
-                for(Product p : products)
-                {
-                    // get image
-                    p.setProductImage(ImageDownloader.getBitmapFromURL(p.getProductImageUrl()));
-
-                    if(list.get(p.getCategoryName()) == null) {
-                        temp = new ArrayList<>();
-
-                    } else {
-                        temp = list.get(p.getCategoryName());
-                    }
-
-                    temp.add(p);
-                    list.put(p.getCategoryName(),temp);
+                } else {
+                    temp = list.get(p.getCategoryName());
                 }
 
-                ELA.notifyDataSetChanged();
-                expandAll();
+                temp.add(p);
+                list.put(p.getCategoryName(),temp);
             }
+
+            pinnedSectionAdapter.notifyDataSetChanged();
+            Log.i("TEST", "onCreate: "+pinnedSectionAdapter.getGroupCount());
+            expandAll();
+
         });
-*/
     }
 //new
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
+
     }
 
     @Override
@@ -212,6 +182,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
                 return true;
             case R.id.save_list:
                 btn_saveClick();
+                return true;
+            case R.id.branch:
+                btn_searchBranchesClick();
                 return true;
             case R.id.user_permission:
                 btn_permissionsClick();
@@ -249,8 +222,44 @@ public class UserShoppingListActivity extends AppCompatActivity {
     public void myCart(View view) {
         Toast toast = Toast.makeText(getApplicationContext(), "worked", Toast.LENGTH_SHORT);
         toast.show();
+    }
+    private void getProductsPrice(Branch branch)
+    {
+        // create a subject (observable/observer) that notifies when a product retrieved from Firebase.
+        PublishSubject<StoreProductRef> storeProdRefSubject = PublishSubject.create();
+        // now declare what to do when the subject notifies us.
+        storeProdRefSubject.subscribe((storeProductRef) -> {
+            List<SessionProduct> products = convertProductsMapToList(this.list);
 
+            SessionProduct prod = null;
+            for (SessionProduct p : products)
+            {
+                if(p.getProductCode().equals(storeProductRef.getProductCode()))
+                {
+                    prod = p;
+                    break;
+                }
+            }
 
+            prod.setProductPrice(storeProductRef.getPrice());
+
+            pinnedSectionAdapter.notifyDataSetChanged();
+        });
+
+        List<SessionProduct> products = convertProductsMapToList(this.list);
+
+        for (SessionProduct p : products)
+            Firebase.getStoreProductByCode(p.getProductCode(),branch.getCompany_id()+"-"+branch.getBranch_id(), storeProdRefSubject);
+
+    }
+
+    private List<SessionProduct> convertProductsMapToList(Map<String, ArrayList<SessionProduct>> productsMap)
+    {
+        Collection<ArrayList<SessionProduct>> c = productsMap.values();
+        ArrayList<SessionProduct> lst = new ArrayList<>();
+        for(ArrayList<SessionProduct> l : c ) { lst.addAll(l); }
+
+       return lst;
     }
 
 
@@ -260,13 +269,17 @@ public class UserShoppingListActivity extends AppCompatActivity {
         startActivityForResult(intent,1);
     }
 
+    public void btn_searchBranchesClick()
+    {
+        Intent intent = new Intent(this, BranchesActivity.class);
+        startActivityForResult(intent,2);
+    }
+
 
     public void btn_saveClick()
     {
-        Collection<ArrayList<Product>> c = list.values();
-        ArrayList<Product> lst = new ArrayList<>();
-        for(ArrayList<Product> l : c ) { lst.addAll(l); }
-        Firebase.setListProducts(listID,lst);
+        List<SessionProduct> lst = convertProductsMapToList(list);
+        Firebase2.setListProducts(listID,lst);
 
         Toast.makeText(UserShoppingListActivity.this,"Saving your list...",Toast.LENGTH_SHORT);
     }
@@ -285,36 +298,55 @@ public class UserShoppingListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 1:
+                if(resultCode == Activity.RESULT_OK){
+                    // parse result into a Product.class (serializable).
+                    Product result= Product.fromBundle(data.getParcelableExtra("result"));
+                    // create a SessionProduct from Product using copy-constructor
+                    SessionProduct sessProd = new SessionProduct(result);
+                    // download & set bitmap image to the product.
+                    result.setProductImage(ImageDownloader.getBitmapFromURL(result.getProductImageUrl()));
 
-        if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                Product result= Product.fromBundle(data.getParcelableExtra("result"));
-                result.setProductImage(ImageDownloader.getBitmapFromURL(result.getProductImageUrl()));
+                    // find correct group, if the group does not exists yet, create it.
+                    ArrayList<SessionProduct> temp;
+                    Boolean isCategoryExistInView = (list.get(result.getCategoryName()) == null);
+                    if(isCategoryExistInView) {
+                        temp = new ArrayList<>();
+                        list.put(result.getCategoryName(), temp);
 
+                    } else {
+                        temp = list.get(result.getCategoryName());
+                    }
 
-                ArrayList<Product> temp;
-                Boolean isCategoryExistInView = (list.get(result.getCategoryName()) == null);
-                if(isCategoryExistInView) {
-                    temp = new ArrayList<>();
-                    list.put(result.getCategoryName(), temp);
+                    // add the product to the group, dont allow duplicates.
+                    if(!temp.contains(result))
+                        temp.add(sessProd);
 
-                } else {
-                    temp = list.get(result.getCategoryName());
+                    // notify adapter that changes were made to the dataset.
+                    pinnedSectionAdapter.notifyDataSetChanged();
                 }
-
-                if(!temp.contains(result))
-                    temp.add(result);
-
-                pinnedSectionAdapter.updateList();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    //Write your code if there's no result
+                }
+                break;
+            ///////////////////////////////////////////////
+            case 2:
+                if(resultCode == Activity.RESULT_OK) {
+                    selectedBranch = (Branch) data.getSerializableExtra("result");
+                    getProductsPrice(selectedBranch);
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    //Write your code if there's no result
+                }
+                break;
+            ///////////////////////////////////////////////
         }
+    }
     }//onActivityResult
-}
 
 
 
