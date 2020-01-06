@@ -40,17 +40,12 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
 
     @Override
     public int getGroupCount() {
-        return list.size();
+        return displayList.size();
     }
 
     @Override
     public int getChildrenCount(int i) {
         return displayList.get(displayList.keySet().toArray()[i]).size();
-//        if (!displayTitles.isEmpty()&&!displayList.containsKey(displayTitles.get(i)))
-//            return -1;
-//        if (displayTitles.size()<=i)
-//            return 0;
-//        return displayList.get(displayTitles.get(i)).size();
     }
 
     @Override
