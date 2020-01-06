@@ -8,10 +8,11 @@ import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.arielu.shopper.demo.R;
-import com.arielu.shopper.demo.models.Product;
+import com.arielu.shopper.demo.classes.Product;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,13 +30,14 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
     private TreeMap<String,ArrayList<Product>> displayData,data;
     private final int blue,white;
 
-    public PinnedSectionAdapter(Context context, TreeMap<String, ArrayList<Product>> displayData) {
+    public PinnedSectionAdapter(Context context, TreeMap<String, ArrayList<Product>> data) {
         this.context = context;
-        this.displayTitles = (ArrayList<String>) createTitles(displayData.keySet());
-        this.displayData = displayData;
-        data = displayData;
+        this.displayTitles = (ArrayList<String>) createTitles(data.keySet());
+        this.displayData = data;
+        this.data = data;
         blue = ContextCompat.getColor(context,R.color.blue);
         white = ContextCompat.getColor(context, R.color.white);
+        selectedItems=new TreeMap<>();
     }
 
     @Override
@@ -45,19 +47,24 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
 
     @Override
     public int getChildrenCount(int i) {
-        if (displayData.get(displayTitles.get(i))==null)
-            return -1;
+        //return displayData.get(displayData.keySet().toArray()[i]).size();
+//        if (!displayTitles.isEmpty()&&!displayData.containsKey(displayTitles.get(i)))
+//            return -1;
+        if (displayTitles.size()<=i)
+            return 0;
         return displayData.get(displayTitles.get(i)).size();
     }
 
     @Override
     public Object getGroup(int i) {
-        return displayTitles.get(i);
+//        return displayData.keySet().toArray()[i];
+       return displayTitles.get(i);
     }
 
     @Override
     public Object getChild(int i, int i1) {
-        return displayData.get(displayTitles.get(i)).get(i1);
+        return displayData.get(displayData.keySet().toArray()[i]).get(i1);
+       // return displayData.get(displayTitles.get(i)).get(i1);
     }
 
     @Override
@@ -77,11 +84,14 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
 
     @Override
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
+        String title = (String) getGroup(i);
         if (view==null){
             LayoutInflater layoutInflater =(LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.list_group,null);
         }
-        ((TextView)view.findViewById(R.id.group_title)).setText(displayTitles.get(i));
+        TextView listTitleView = view.findViewById(R.id.group_title);
+        listTitleView.setText(title);
+        //((TextView)view.findViewById(R.id.group_title)).setText(displayTitles.get(i));
         return view;
     }
 
@@ -91,9 +101,11 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.list_item, null);
         }
-        Product curr = displayData.get(displayTitles.get(i)).get(i1);
-        ((TextView) view.findViewById(R.id.item_name)).setText(curr.getItemName());
-        if (selectedItems.get(i).contains(i1))
+        Product currItem = (Product) getChild(i,i1);
+        ((TextView)view.findViewById(R.id.item_name)).setText(currItem.getProductName());
+        ((TextView)view.findViewById(R.id.item_price)).setText("\u20AA"+currItem.getProductPrice());
+        ((ImageView)view.findViewById(R.id.item_image)).setImageBitmap(currItem.ProductImage());
+        if (selectedItems.containsKey(i)&&selectedItems.get(i).contains(i1))
             view.setBackgroundColor(blue);
         else
             view.setBackgroundColor(white);
@@ -124,18 +136,41 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
     public void remove(){
         for (int group:selectedItems.keySet()) {
             String currGroup = displayTitles.get(group);
-            ArrayList list = displayData.get(currGroup);
+            ArrayList list = data.get(currGroup);
             Collections.sort(selectedItems.get(group),Collections.<Integer>reverseOrder());
             for (int child:selectedItems.get(group)) {
-                if (list.size() == 1)
-                    displayData.remove(currGroup);
+                if (list.size()<=1)
+                    data.remove(currGroup);
                 else
                     list.remove(child);
             }
         }
+        selectedItems.clear();
+        this.displayData = data;
+        this.displayTitles = (ArrayList<String>) createTitles(data.keySet());
+        notifyDataSetChanged();
     }
     public void add(){
 
+    }
+
+    public boolean select(int group, int child){
+        ArrayList<Integer> list;
+        if (selectedItems.containsKey(group)){
+            list = (ArrayList<Integer>) selectedItems.get(group);
+            if (list.contains(child)){
+                if (list.size()==1)
+                    selectedItems.remove(group);
+                else
+                    list.remove(child);
+                return false;
+            }else list.add(child);
+        }else{
+            list = new ArrayList<>();
+            list.add(child);
+            selectedItems.put(group,list);
+        }
+        return true;
     }
     @Override
     public Filter getFilter() {
@@ -153,7 +188,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
                     }
                     else
                         for (Product product: data.get(group)) {
-                            if (product.getItemName().toLowerCase().startsWith(charSequence.toString())){
+                            if (product.getProductName().toLowerCase().startsWith(charSequence.toString())){
                                 if (filterData.containsKey(group))
                                     filterData.get(group).add(product);
                                 else {
@@ -185,5 +220,10 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             list.add(groupName);
         }
         return list;
+    }
+    public void updateList(){
+        displayData = data;
+        displayTitles = (ArrayList<String>) createTitles(displayData.keySet());
+        notifyDataSetChanged();
     }
 }
