@@ -304,7 +304,7 @@ public class UserShoppingListActivity extends AppCompatActivity {
                     // create a SessionProduct from Product using copy-constructor
                     SessionProduct sessProd = new SessionProduct(result);
                     // download & set bitmap image to the product.
-                    result.setProductImage(ImageDownloader.getBitmapFromURL(result.getProductImageUrl()));
+                    sessProd.setProductImage(ImageDownloader.getBitmapFromURL(result.getProductImageUrl()));
 
                     // find correct group, if the group does not exists yet, create it.
                     ArrayList<SessionProduct> temp;

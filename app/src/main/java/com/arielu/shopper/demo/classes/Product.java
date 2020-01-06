@@ -38,7 +38,9 @@ public class Product implements Serializable
         setProductPrice(other.getProductPrice());
         setProductImageUrl(other.getProductImageUrl());
         setProductManufacturer(getProductManufacturer());
-        productImage = Bitmap.createBitmap(other.ProductImage());
+
+        if(other.ProductImage()!=null)
+            productImage = Bitmap.createBitmap(other.ProductImage());
 
     }
 
