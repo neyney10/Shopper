@@ -132,6 +132,21 @@ final public class Firebase2 {
     }
 
 
+    // Save/post message
+    public static void pushNewSessionlist(String uID, String listID)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference myRef = database.getReference("user_session_lists/"+uID);
+
+        String pushedKey = myRef.push().getKey();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(pushedKey, listID);
+        myRef.updateChildren(map);
+    }
+
+
     ////////////// Templates //////////////////
 
     private static void firebaseDBSetRequest(String refPath, Object value)

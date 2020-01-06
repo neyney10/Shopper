@@ -26,6 +26,7 @@ import com.arielu.shopper.demo.utilities.ImageDownloader;
 import com.arielu.shopper.demo.classes.Product;
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.core.utilities.Tree;
 
 import java.util.ArrayList;
@@ -218,7 +219,11 @@ public class UserShoppingListActivity extends AppCompatActivity {
             case 2:
                 if(resultCode == Activity.RESULT_OK) {
                     selectedBranch = (Branch) data.getSerializableExtra("result");
+                    if(selectedBranch == null) break;
                     getProductsPrice(selectedBranch);
+
+                    Firebase2.pushNewSessionlist(FirebaseAuth.getInstance().getCurrentUser().getUid(),
+                            this.listID);
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     //Write your code if there's no result
