@@ -3,6 +3,8 @@ package com.arielu.shopper.demo.pinnedsectionlistview;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,6 +51,7 @@ public class PinnedSectionListView extends ExpandableListView {
     private int mTopSectionHeight;
     private int currentGroup,aheadGroup;
     private boolean isClickableBottom,isClickableTop;
+    private GestureDetector.SimpleOnGestureListener gestureDetectorSimple;
 
     public PinnedSectionListView(Context context) {
         super(context);
@@ -69,6 +72,7 @@ public class PinnedSectionListView extends ExpandableListView {
         setGroupIndicator(null);
         setOnScrollListener((OnScrollListener)mAdapter);
         setDividerHeight(0);
+        gestureDetectorSimple = new GestureDetector.SimpleOnGestureListener();
     }
     public void setPinnedSections(int layout){
         setPinnedSections(layout,layout);
@@ -270,13 +274,15 @@ public class PinnedSectionListView extends ExpandableListView {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (mTopSectionViewVisible&&isClickableTop&&ev.getAction()==MotionEvent.ACTION_UP&&mTopSectionView.getLeft()<=ev.getX()&&mTopSectionView.getRight()>=ev.getX()&&mTopSectionView.getTop()<=ev.getY()&&mTopSectionView.getBottom()>=ev.getY()){
-            this.setSelectedGroup(currentGroup);
-            return true;
-        }
-        if (mBottomSectionViewVisible&&isClickableBottom&&ev.getAction()==MotionEvent.ACTION_UP&&mBottomSectionView.getTranslationX()<=ev.getX()&&(mBottomSectionView.getTranslationX()+mBottomSectionView.getRight())>=ev.getX()&&(mBottomSectionView.getTranslationY()+mBottomSectionView.getTop())<=ev.getY()&&(mBottomSectionView.getTranslationY()+mBottomSectionView.getBottom())>=ev.getY()){
-            this.setSelectedGroup(aheadGroup);
-            return true;
+        if(ev.getAction()==MotionEvent.ACTION_DOWN) {
+            if (mTopSectionViewVisible && isClickableTop && mTopSectionView.getLeft() <= ev.getX() && mTopSectionView.getRight() >= ev.getX() && mTopSectionView.getTop() <= ev.getY() && mTopSectionView.getBottom() >= ev.getY()) {
+                this.setSelectedGroup(currentGroup);
+                return true;
+            }
+            if (mBottomSectionViewVisible && isClickableBottom && mBottomSectionView.getTranslationX() <= ev.getX() && (mBottomSectionView.getTranslationX() + mBottomSectionView.getRight()) >= ev.getX() && (mBottomSectionView.getTranslationY() + mBottomSectionView.getTop()) <= ev.getY() && (mBottomSectionView.getTranslationY() + mBottomSectionView.getBottom()) >= ev.getY()) {
+                this.setSelectedGroup(aheadGroup);
+                return true;
+            }
         }
         return super.onTouchEvent(ev);
     }

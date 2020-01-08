@@ -134,6 +134,8 @@ public class UserShoppingListActivity extends AppCompatActivity {
         pinnedSectionListView.setPinnedSections(R.layout.list_group);
         //get data
         Firebase2.getListItems(this.listID, (data) -> {
+            if(data==null)
+                return;
             List<SessionProduct> products = (List<SessionProduct>) data;
             ArrayList<SessionProduct> temp;
             for(SessionProduct p : products)
