@@ -2,15 +2,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="@string/new_list_title"
-       android:textSize="29dp"
-       android:layout_gravity="center"
-       ></TextView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="New Permission"
+        android:textSize="29dp"></TextView>
     <EditText
-        android:id="@+id/list_name"
+        android:id="@+id/tv_userdata"
         android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

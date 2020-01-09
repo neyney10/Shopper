@@ -48,6 +48,74 @@ final public class Firebase2 {
         });
     }
 
+    /**
+     * Retrieve from firebase DB the lists that other people shared or gave permissions to the user.
+     */
+    public static void getUserSharedLists(String uID, Task<List<Shopping_list>> task)
+    {
+
+        firebaseDBGetRequest("user_shared_shopping_lists/"+uID, task, dataSnapshot -> {
+            Log.d("firebase_shared_lists",dataSnapshot.toString());
+            List<Shopping_list> lists = new ArrayList<>();
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+            {
+                String listID = dss.getKey();
+                String listTitle = dss.getValue(String.class);
+                lists.add(new Shopping_list(listID,uID, listTitle));
+
+            }
+            return lists;
+        });
+    }
+
+    public static void getListPermissions(String listID, Task<List<Permission>> task)
+    {
+        firebaseDBGetRequest("shopping_list_permissions/"+listID,task,(dataSnapshot) -> {
+            List<Permission> permissions_data = new ArrayList<>();
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+            {
+                String permUserID = dss.getKey();
+                Permission.PermissionType permType = Permission.PermissionType.valueOf(dss.child("permissionType").getValue(String.class));
+
+                permissions_data.add(new Permission(permUserID,permType));
+            }
+
+            return permissions_data;
+        });
+
+    }
+
+    public static void getUserNameByID(final String uID, Task<String[]> task)
+    {
+        firebaseDBGetRequest("users/"+uID+"/name",task,(dataSnapshot) -> {
+            String name = dataSnapshot.getValue(String.class);
+            String data[] = {uID, name};
+            return data;
+        });
+    }
+
+    public static void getUserIDByPhone(final String phone, Task<String[]> task)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users");
+        Query query = myRef.orderByChild("phoneNumber").equalTo(phone).limitToFirst(1);
+
+        firebaseDBGetRequestWithQuery(query, task , (dataSnapshot) -> {
+
+            String uID = null;
+            String phoneNumber = phone;
+            // get the first one with matching phoneNumber.
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+            {
+                uID = dss.getKey();
+                break; // iterate only once.
+            }
+
+            return new String[] {phoneNumber, uID};
+        });
+
+    }
+
     public static void getUserListinSession(String uID, Task task)
     {
         firebaseDBGetRequest("user_session_lists/"+uID,task,(dataSnapshot) -> {
@@ -108,6 +176,37 @@ final public class Firebase2 {
             User user = dataSnapshot.getValue(User.class);
             return user;
         });
+    }
+
+    public static void removePermission(String listID, String uID)
+    {
+        // need to remove data at 2 locations:
+        // [1] from shopping_list_permissions/listID/userID
+        // [2] from user_shared_shopping_lists/userID/listID:title.
+
+        // [1]
+        firebaseDBSetRequest("shopping_list_permissions/"+listID+"/"+uID, null);
+        // [2]
+        firebaseDBSetRequest("user_shared_shopping_lists/"+uID, null);
+    }
+
+    public static void setNewPermission(String listID, String listTitle,Permission permission)
+    {
+        // need to set data at 2 locations:
+        // [1] at shopping_list_permissions/listID/userID
+        // [2] at user_shared_shopping_lists/userID/listID:title.
+
+        String uID = permission.getUserID();
+
+        // set [1].
+        Map<String, Object> data = new HashMap<>();
+        data.put("permissionType", permission.getPermissionType());
+        firebaseDBSetRequest("shopping_list_permissions/"+listID+"/"+uID, data);
+
+        // set [2]
+        Map<String, Object> data2 = new HashMap<>();
+        data2.put(listID, listTitle);
+        firebaseDBSetRequest("user_shared_shopping_lists/"+uID, data2);
     }
 
 

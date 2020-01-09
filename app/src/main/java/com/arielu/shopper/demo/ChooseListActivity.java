@@ -24,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -48,22 +49,13 @@ public class ChooseListActivity extends AppCompatActivity
         shopping_Lists = new ArrayList<Shopping_list>() ;
         mAuth = FirebaseAuth.getInstance();
 
-        /* deprecated
-        Observable<List<Shopping_list>> o =  Firebase.getUserLists(mAuth.getCurrentUser().getUid());
-        o.subscribe(new ObserverFirebaseTemplate<List<Shopping_list>>() {
-            @Override
-            public void onNext(List<Shopping_list> lists) {
-                shopping_Lists.clear();
-                shopping_Lists.addAll(lists);
-                arrayAdapter.notifyDataSetChanged();
-            }
-        });
-         */
-
         Firebase2.getUserLists(mAuth.getCurrentUser().getUid(),(lists) -> {
+            addAllItemsToList((List<Shopping_list>)lists);
+            arrayAdapter.notifyDataSetChanged();
+        });
 
-            shopping_Lists.clear();
-            shopping_Lists.addAll((List<Shopping_list>)lists);
+        Firebase2.getUserSharedLists(mAuth.getCurrentUser().getUid(),(lists) -> {
+            addAllItemsToList(lists);
             arrayAdapter.notifyDataSetChanged();
         });
 
@@ -80,8 +72,9 @@ public class ChooseListActivity extends AppCompatActivity
                 Intent intent = new Intent(ChooseListActivity.this, UserShoppingListActivity.class);
 
                 Shopping_list listItem = shopping_Lists.get(i);
-                intent.putExtra("listID", listItem.getShopping_list_id());
-                intent.putExtra("listName", listItem.getShopping_list_title());
+                intent.putExtra("list", listItem);
+                //intent.putExtra("listID", listItem.getShopping_list_id());
+                //intent.putExtra("listName", listItem.getShopping_list_title());
                 startActivity(intent);
             }
         });
@@ -108,6 +101,11 @@ public class ChooseListActivity extends AppCompatActivity
 
 
         });
+    }
+
+    private synchronized void addAllItemsToList(Collection<Shopping_list> list)
+    {
+        shopping_Lists.addAll(list);
     }
 
 
