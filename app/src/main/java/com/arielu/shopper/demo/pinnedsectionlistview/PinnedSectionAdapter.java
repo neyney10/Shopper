@@ -45,19 +45,21 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
 
     @Override
     public int getChildrenCount(int i) {
-        return displayList.get(displayList.keySet().toArray()[i]).size();
+            if (displayList.containsKey(getGroup(i)))
+        return displayList.get(getGroup(i)).size();
+            return 0;
     }
 
     @Override
     public Object getGroup(int i) {
+        if (displayList.size()>i)
         return displayList.keySet().toArray()[i];
-//       return displayTitles.get(i);
+        return 0;
     }
 
     @Override
     public Object getChild(int i, int i1) {
         return displayList.get(displayList.keySet().toArray()[i]).get(i1);
-       // return displayList.get(displayTitles.get(i)).get(i1);
     }
 
     @Override
@@ -84,7 +86,6 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
         }
         TextView listTitleView = view.findViewById(R.id.group_title);
         listTitleView.setText(title);
-        //((TextView)view.findViewById(R.id.group_title)).setText(displayTitles.get(i));
         return view;
     }
 

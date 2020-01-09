@@ -139,6 +139,7 @@ public class UserShoppingListActivity extends AppCompatActivity {
         //get data
         Firebase2.getListItems(this.listObj.getShopping_list_id(), (data) -> {
             if(data == null) return;
+
             List<SessionProduct> products = (List<SessionProduct>) data;
             ArrayList<SessionProduct> temp;
             for(SessionProduct p : products)

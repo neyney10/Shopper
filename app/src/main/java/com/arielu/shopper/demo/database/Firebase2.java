@@ -48,6 +48,19 @@ final public class Firebase2 {
         });
     }
 
+   /* public static String pushListItems(List<SessionProduct> list){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference myRef = database.getReference("shopping_list_items");
+
+        String pushedKey = myRef.push().getKey();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(pushedKey, list);
+        myRef.updateChildren(map);
+        return pushedKey;
+    } */
+
     /**
      * Retrieve from firebase DB the lists that other people shared or gave permissions to the user.
      */
@@ -162,14 +175,31 @@ final public class Firebase2 {
 
     public static void getUserLists(String uID, Task task)
     {
-        firebaseDBGetRequest("user_shopping_lists/"+uID, task, (dataSnapshot) -> {
-            GenericTypeIndicator<List<Shopping_list>> genericTypeIndicator = new GenericTypeIndicator<List<Shopping_list>>() {};
-            List<Shopping_list> lists = dataSnapshot.getValue(genericTypeIndicator);
-
+        firebaseDBGetRequest("user_shopping_lists/"+uID,task,(dataSnapshot) -> {
+            List<Shopping_list> lists = new ArrayList<>();
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+                lists.add(dss.getValue(Shopping_list.class));
             return lists;
         });
     }
 
+    public static void setUserLists(String uID,List<Shopping_list> shopping_lists){
+
+        firebaseDBSetRequest("user_shopping_lists/"+uID,shopping_lists);
+    }
+
+    public static void pushUserList(String uID,Shopping_list shopping_lists){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference myRef = database.getReference("user_shopping_lists/"+uID);
+
+        String pushedKey = myRef.push().getKey();
+        shopping_lists.setShopping_list_id(pushedKey);
+        Map<String, Object> map = new HashMap<>();
+        map.put(pushedKey, shopping_lists);
+        myRef.updateChildren(map);
+
+    }
     public static void getUserData(String uID, Task task)
     {
         firebaseDBGetRequest("users/"+uID, task, (dataSnapshot) -> {
