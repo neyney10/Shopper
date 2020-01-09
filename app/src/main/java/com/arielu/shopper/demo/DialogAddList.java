@@ -14,7 +14,7 @@ import android.widget.EditText;
 
 import androidx.fragment.app.DialogFragment;
 
-public class DialogAddList extends DialogFragment {
+public class DialogAddList extends DialogFragment  {
     private EditText listName;
     private DialogListener dialogListener;
     public Dialog onCreateDialog(Bundle savedInstanceState) {

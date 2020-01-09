@@ -40,8 +40,6 @@ import io.reactivex.rxjava3.core.Observable;
 public class ChooseListActivity extends AppCompatActivity implements DialogAddList.DialogListener
 {
     ListView listview ;
-    DatabaseReference dataBaseLists ;
-    DataSnapshot dataSnapshot ;
     ArrayList<Shopping_list> shopping_Lists ;
     ArrayAdapter arrayAdapter;
     Button addList ;
@@ -120,8 +118,6 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
         });
 
 
-        //NOT READY!!!!! - problem: how to retrieve user id ??
-        //add new list to database
         addList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

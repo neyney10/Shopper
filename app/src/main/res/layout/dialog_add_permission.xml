@@ -9,15 +9,13 @@
         android:layout_gravity="center"
         android:text="New Permission"
         android:textSize="29dp"></TextView>
+
     <EditText
-        android:id="@+id/tv_userdata"
-        android:inputType="text"
+        android:id="@+id/et_userdata"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
-        android:hint="@string/list_name" />
+        android:ems="10"
+        android:hint="enter user's phone number"
+        android:inputType="textPersonName" />
 
 </LinearLayout>

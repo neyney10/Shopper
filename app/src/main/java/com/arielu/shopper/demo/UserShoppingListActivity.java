@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class UserShoppingListActivity extends AppCompatActivity {
+public class UserShoppingListActivity extends AppCompatActivity{
 
     private TreeMap<String, ArrayList<SessionProduct>> list = new TreeMap<>();
 
@@ -351,8 +351,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
                 }
                 break;
         }
-    }
     }//onActivityResult
+
+}
 
 
 

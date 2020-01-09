@@ -3,17 +3,21 @@ package com.arielu.shopper.demo;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
 public class DialogAddPermission extends DialogFragment {
+
+    private DialogAddPermission.DialogListener dialogListener;
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -22,13 +26,16 @@ public class DialogAddPermission extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.dialog_add_permission, null))
+        View view = inflater.inflate(R.layout.dialog_add_permission, null);
+        builder.setView(view)
                 // Add action buttons
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        EditText et_userdata = view.findViewById(R.id.et_userdata);
+                        String userPhoneNumber = et_userdata.getText().toString();
 
-
+                        dialogListener.addPermission(userPhoneNumber);
                     }
                 })
                 .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
@@ -42,24 +49,12 @@ public class DialogAddPermission extends DialogFragment {
 
 
     @Override
-
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-
-                             Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.dialog_add_permission, container);
-
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        dialogListener = (DialogAddPermission.DialogListener) context;
     }
 
-
-
-    @Override
-
-    public void onViewCreated(View view,  Bundle savedInstanceState) {
-
-        super.onViewCreated(view, savedInstanceState);
-
-
-
+    interface DialogListener{
+        void addPermission(String listName);
     }
 }
