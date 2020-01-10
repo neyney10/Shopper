@@ -3,17 +3,13 @@ package com.arielu.shopper.demo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.arielu.shopper.demo.classes.Branch;
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.models.Message;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,24 +18,15 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MessageBoardActivity extends AppCompatActivity {
+public class UserMessageBoardActivity extends AppCompatActivity {
     ListView listview;
     List<Message> messages;
     MessageAdapter messageAdapter;
-private ImageView add_msg_button ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.message_board);
-
-        add_msg_button = (ImageView) findViewById(R.id.add_new_message_btn) ;
-        add_msg_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                newMessageDialog() ;
-            }
-        });
+        setContentView(R.layout.activity_user_messages);
 
         retrieveMessagesFromDB(Firebase.userData.getCompanybranchID());
 
@@ -49,10 +36,6 @@ private ImageView add_msg_button ;
         listview.setAdapter(messageAdapter);
     }
 
-    public void newMessageDialog() {
-        messageDialog msgDialog = new messageDialog() ;
-        msgDialog.show(getSupportFragmentManager() , "msgDialog");
-    }
 
     public void sendMessage(View v){
         // TODO: Ability to create a title.
@@ -83,12 +66,12 @@ private ImageView add_msg_button ;
 
     public void retrieveMessagesFromDB(String companybranchID)
     {
-         Firebase2.getStoreMessages(companybranchID, (msgsObj) -> {
-             List<Message> msgs = (List<Message>) msgsObj;
-             Log.d("firebase_messages", msgs.toString());
-             messages.clear();
-             messages.addAll(msgs);
-             messageAdapter.notifyDataSetChanged();
-         });
+        Firebase2.getStoreMessages(companybranchID, (msgsObj) -> {
+            List<Message> msgs = (List<Message>) msgsObj;
+            Log.d("firebase_messages", msgs.toString());
+            messages.clear();
+            messages.addAll(msgs);
+            messageAdapter.notifyDataSetChanged();
+        });
     }
 }

@@ -96,7 +96,7 @@ public class UserPanelActivity extends AppCompatActivity {
 
     public void btn_testClick(View view)
     {
-        Intent intent = new Intent(this, MessageBoardActivity.class);
+        Intent intent = new Intent(this, UserMessageBoardActivity.class);
         startActivity(intent);
     }
 }

@@ -116,6 +116,8 @@ public class BranchesActivity extends AppCompatActivity {
 
     private void filterBranchesByDistance(int dist_filter)
     {
+        if(locTracker.getLocation() == null)
+            return ;
         branches_filtered.clear();
         for (Branch b : branches) {
             if (locTracker.getLocation().distanceTo(b.LocationData()) <= dist_filter)
