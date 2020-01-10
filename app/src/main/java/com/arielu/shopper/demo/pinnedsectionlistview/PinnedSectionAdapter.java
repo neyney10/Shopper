@@ -96,6 +96,8 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             view = layoutInflater.inflate(R.layout.list_item, null);
         }
         Product currItem = (Product) getChild(i,i1);
+        if(currItem instanceof SessionProduct)
+            ((TextView)view.findViewById(R.id.item_quantity)).setText("#"+((SessionProduct)currItem).getQuantity());
         ((TextView)view.findViewById(R.id.item_name)).setText(currItem.getProductName());
         ((TextView)view.findViewById(R.id.item_price)).setText("\u20AA"+currItem.getProductPrice());
         ((ImageView)view.findViewById(R.id.item_image)).setImageBitmap(currItem.ProductImage());

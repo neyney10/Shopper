@@ -63,7 +63,7 @@ public class UserPanelActivity extends AppCompatActivity {
                     List<SessionProduct> sessProducts = (List<SessionProduct>) data2;
                     double sum = 0;
                     for(SessionProduct sp : sessProducts)
-                        sum += sp.getProductPrice();
+                        sum += sp.computeTotalPrice();
 
                     ((TextView)findViewById(R.id.tv_list_total_price)).setText(Double.toString(sum)+"₪");
                 });

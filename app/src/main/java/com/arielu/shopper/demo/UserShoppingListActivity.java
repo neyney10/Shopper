@@ -1,51 +1,39 @@
 package com.arielu.shopper.demo;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.subjects.PublishSubject;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.se.omapi.Session;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arielu.shopper.demo.classes.Branch;
+import com.arielu.shopper.demo.classes.Product;
 import com.arielu.shopper.demo.classes.Shopping_list;
+import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.models.SessionProduct;
 import com.arielu.shopper.demo.models.StoreProductRef;
-import com.arielu.shopper.demo.utilities.ImageDownloader;
-import com.arielu.shopper.demo.classes.Product;
-import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionAdapter;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView;
-import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
+import com.arielu.shopper.demo.utilities.ImageDownloader;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.core.utilities.Tree;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class UserShoppingListActivity extends AppCompatActivity{
 
@@ -308,25 +296,23 @@ public class UserShoppingListActivity extends AppCompatActivity{
         switch (requestCode) {
             case 1:
                 if(resultCode == Activity.RESULT_OK){
-                    // parse result into a Product.class (serializable).
-                    Product result= Product.fromBundle(data.getParcelableExtra("result"));
-                    // create a SessionProduct from Product using copy-constructor
-                    SessionProduct sessProd = new SessionProduct(result);
+                    // parse result into a SessionProduct.class (serializable / parcelable).
+                    SessionProduct sessProd = SessionProduct.fromBundle(data.getParcelableExtra("result"));
                     // download & set bitmap image to the product.
-                    sessProd.setProductImage(ImageDownloader.getBitmapFromURL(result.getProductImageUrl()));
+                    sessProd.setProductImage(ImageDownloader.getBitmapFromURL(sessProd.getProductImageUrl()));
 
                     // find correct group, if the group does not exists yet, create it.
                     ArrayList<SessionProduct> temp;
-                    Boolean isCategoryExistInView = (list.get(result.getCategoryName()) == null);
+                    Boolean isCategoryExistInView = (list.get(sessProd.getCategoryName()) == null);
                     if(isCategoryExistInView) {
                         temp = new ArrayList<>();
-                        list.put(result.getCategoryName(), temp);
+                        list.put(sessProd.getCategoryName(), temp);
                     } else {
-                        temp = list.get(result.getCategoryName());
+                        temp = list.get(sessProd.getCategoryName());
                     }
 
                     // add the product to the group, dont allow duplicates.
-                    if(!temp.contains(result))
+                    if(!temp.contains(sessProd))
                         temp.add(sessProd);
 
                     // notify adapter that changes were made to the dataset.
