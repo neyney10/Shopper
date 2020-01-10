@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.classes.Product;
@@ -134,5 +135,15 @@ public class SearchItemsActivity extends AppCompatActivity implements DialogAddP
     public void addQuantity(int quantity)
     {
         this.productQuantity = quantity;
+
+        if(quantity != 0 & this.selected_item != null)
+        {
+            TextView tv_chosen_item =  findViewById(R.id.tv_chosen_item);
+            String itemText = this.selected_item.getProductName() + " | #" + quantity;
+            tv_chosen_item.setText(itemText);
+
+            // show chosen item textview
+            tv_chosen_item.setVisibility(View.VISIBLE);
+        }
     }
 }
