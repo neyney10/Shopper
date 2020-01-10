@@ -48,6 +48,87 @@ final public class Firebase2 {
         });
     }
 
+   /* public static String pushListItems(List<SessionProduct> list){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference myRef = database.getReference("shopping_list_items");
+
+        String pushedKey = myRef.push().getKey();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(pushedKey, list);
+        myRef.updateChildren(map);
+        return pushedKey;
+    } */
+
+    /**
+     * Retrieve from firebase DB the lists that other people shared or gave permissions to the user.
+     */
+    public static void getUserSharedLists(String uID, Task<List<Shopping_list>> task)
+    {
+
+        firebaseDBGetRequest("user_shared_shopping_lists/"+uID, task, dataSnapshot -> {
+            Log.d("firebase_shared_lists",dataSnapshot.toString());
+            List<Shopping_list> lists = new ArrayList<>();
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+            {
+                String listID = dss.getKey();
+                String listTitle = dss.getValue(String.class);
+                lists.add(new Shopping_list(listID,uID, listTitle));
+
+            }
+            return lists;
+        });
+    }
+
+    public static void getListPermissions(String listID, Task<List<Permission>> task)
+    {
+        firebaseDBGetRequest("shopping_list_permissions/"+listID,task,(dataSnapshot) -> {
+            List<Permission> permissions_data = new ArrayList<>();
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+            {
+                String permUserID = dss.getKey();
+                Permission.PermissionType permType = Permission.PermissionType.valueOf(dss.child("permissionType").getValue(String.class));
+
+                permissions_data.add(new Permission(permUserID,permType));
+            }
+
+            return permissions_data;
+        });
+
+    }
+
+    public static void getUserNameByID(final String uID, Task<String[]> task)
+    {
+        firebaseDBGetRequest("users/"+uID+"/name",task,(dataSnapshot) -> {
+            String name = dataSnapshot.getValue(String.class);
+            String data[] = {uID, name};
+            return data;
+        });
+    }
+
+    public static void getUserIDByPhone(final String phone, Task<String[]> task)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users");
+        Query query = myRef.orderByChild("phoneNumber").equalTo(phone).limitToFirst(1);
+
+        firebaseDBGetRequestWithQuery(query, task , (dataSnapshot) -> {
+
+            String uID = null;
+            String phoneNumber = phone;
+            // get the first one with matching phoneNumber.
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+            {
+                uID = dss.getKey();
+                break; // iterate only once.
+            }
+
+            return new String[] {phoneNumber, uID};
+        });
+
+    }
+
     public static void getUserListinSession(String uID, Task task)
     {
         firebaseDBGetRequest("user_session_lists/"+uID,task,(dataSnapshot) -> {
@@ -94,20 +175,68 @@ final public class Firebase2 {
 
     public static void getUserLists(String uID, Task task)
     {
-        firebaseDBGetRequest("user_shopping_lists/"+uID, task, (dataSnapshot) -> {
-            GenericTypeIndicator<List<Shopping_list>> genericTypeIndicator = new GenericTypeIndicator<List<Shopping_list>>() {};
-            List<Shopping_list> lists = dataSnapshot.getValue(genericTypeIndicator);
-
+        firebaseDBGetRequest("user_shopping_lists/"+uID,task,(dataSnapshot) -> {
+            List<Shopping_list> lists = new ArrayList<>();
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+                lists.add(dss.getValue(Shopping_list.class));
             return lists;
         });
     }
 
+    public static void setUserLists(String uID,List<Shopping_list> shopping_lists){
+
+        firebaseDBSetRequest("user_shopping_lists/"+uID,shopping_lists);
+    }
+
+    public static void pushUserList(String uID,Shopping_list shopping_lists){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference myRef = database.getReference("user_shopping_lists/"+uID);
+
+        String pushedKey = myRef.push().getKey();
+        shopping_lists.setShopping_list_id(pushedKey);
+        Map<String, Object> map = new HashMap<>();
+        map.put(pushedKey, shopping_lists);
+        myRef.updateChildren(map);
+
+    }
     public static void getUserData(String uID, Task task)
     {
         firebaseDBGetRequest("users/"+uID, task, (dataSnapshot) -> {
             User user = dataSnapshot.getValue(User.class);
             return user;
         });
+    }
+
+    public static void removePermission(String listID, String uID)
+    {
+        // need to remove data at 2 locations:
+        // [1] from shopping_list_permissions/listID/userID
+        // [2] from user_shared_shopping_lists/userID/listID:title.
+
+        // [1]
+        firebaseDBSetRequest("shopping_list_permissions/"+listID+"/"+uID, null);
+        // [2]
+        firebaseDBSetRequest("user_shared_shopping_lists/"+uID, null);
+    }
+
+    public static void setNewPermission(String listID, String listTitle,Permission permission)
+    {
+        // need to set data at 2 locations:
+        // [1] at shopping_list_permissions/listID/userID
+        // [2] at user_shared_shopping_lists/userID/listID:title.
+
+        String uID = permission.getUserID();
+
+        // set [1].
+        Map<String, Object> data = new HashMap<>();
+        data.put("permissionType", permission.getPermissionType());
+        firebaseDBSetRequest("shopping_list_permissions/"+listID+"/"+uID, data);
+
+        // set [2]
+        Map<String, Object> data2 = new HashMap<>();
+        data2.put(listID, listTitle);
+        firebaseDBSetRequest("user_shared_shopping_lists/"+uID, data2);
     }
 
 
@@ -128,6 +257,21 @@ final public class Firebase2 {
 
         Map<String, Object> map = new HashMap<>();
         map.put(pushedKey, message);
+        myRef.updateChildren(map);
+    }
+
+
+    // Save/post message
+    public static void pushNewSessionlist(String uID, String listID)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference myRef = database.getReference("user_session_lists/"+uID);
+
+        String pushedKey = myRef.push().getKey();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(pushedKey, listID);
         myRef.updateChildren(map);
     }
 

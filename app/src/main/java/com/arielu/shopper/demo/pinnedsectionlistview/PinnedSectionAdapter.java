@@ -45,19 +45,21 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
 
     @Override
     public int getChildrenCount(int i) {
-        return displayList.get(displayList.keySet().toArray()[i]).size();
+            if (displayList.containsKey(getGroup(i)))
+        return displayList.get(getGroup(i)).size();
+            return 0;
     }
 
     @Override
     public Object getGroup(int i) {
+        if (displayList.size()>i)
         return displayList.keySet().toArray()[i];
-//       return displayTitles.get(i);
+        return 0;
     }
 
     @Override
     public Object getChild(int i, int i1) {
         return displayList.get(displayList.keySet().toArray()[i]).get(i1);
-       // return displayList.get(displayTitles.get(i)).get(i1);
     }
 
     @Override
@@ -84,7 +86,6 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
         }
         TextView listTitleView = view.findViewById(R.id.group_title);
         listTitleView.setText(title);
-        //((TextView)view.findViewById(R.id.group_title)).setText(displayTitles.get(i));
         return view;
     }
 
@@ -95,6 +96,8 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             view = layoutInflater.inflate(R.layout.list_item, null);
         }
         Product currItem = (Product) getChild(i,i1);
+        if(currItem instanceof SessionProduct)
+            ((TextView)view.findViewById(R.id.item_quantity)).setText("#"+((SessionProduct)currItem).getQuantity());
         ((TextView)view.findViewById(R.id.item_name)).setText(currItem.getProductName());
         ((TextView)view.findViewById(R.id.item_price)).setText("\u20AA"+currItem.getProductPrice());
         ((ImageView)view.findViewById(R.id.item_image)).setImageBitmap(currItem.ProductImage());
