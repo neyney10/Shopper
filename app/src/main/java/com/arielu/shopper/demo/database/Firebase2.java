@@ -47,6 +47,14 @@ final public class Firebase2 {
             }
         });
     }
+    public static void removeListItems(List<String> listIDs){
+        for (String listID:listIDs) {
+            removeListItems(listID);
+        }
+    }
+    public static void removeListItems(String listID){
+        firebaseDBSetRequest("shopping_list_items/"+listID,null);
+    }
     /*
     public static String pushListItems(List<SessionProduct> list){
         FirebaseDatabase database = FirebaseDatabase.getInstance();

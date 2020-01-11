@@ -325,6 +325,7 @@ public class UserShoppingListActivity extends AppCompatActivity {
 
                     // notify adapter that changes were made to the dataset.
                     pinnedSectionAdapter.notifyDataSetChanged();
+                    expandAll();
 
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {

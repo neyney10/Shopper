@@ -143,9 +143,6 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
         this.displayList = list;
         notifyDataSetChanged();
     }
-    public void add(){
-
-    }
 
     public boolean select(int group, int child){
         ArrayList<Integer> list;
@@ -205,12 +202,5 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             }
         };
         return filter;
-    }
-    private List<String> createTitles(Set<String> groupNames){
-        ArrayList<String> list = new ArrayList<>();
-        for (String groupName:groupNames) {
-            list.add(groupName);
-        }
-        return list;
     }
 }

@@ -1,32 +1,22 @@
 package com.arielu.shopper.demo;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.arielu.shopper.demo.classes.Shopping_list;
-import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.database.Firebase2;
-import com.arielu.shopper.demo.models.SessionProduct;
-import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -34,28 +24,35 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.rxjava3.core.Observable;
-
 public class ChooseListActivity extends AppCompatActivity implements DialogAddList.DialogListener
 {
     ListView listview ;
     DatabaseReference dataBaseLists ;
     DataSnapshot dataSnapshot ;
     ArrayList<Shopping_list> shopping_Lists ;
-    ArrayAdapter arrayAdapter;
-    Button addList ;
+    ListsAdapter arrayAdapter;
+    Toolbar toolbar;
+    LinearLayout addListFAB;
     FirebaseAuth mAuth ;
+    private boolean isSelectOn;
+    private int blue,white;
+
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_list);
 
         listview = (ListView) findViewById(R.id.lists) ;
-        addList = (Button) findViewById((R.id.addListButton) );
 
         shopping_Lists = new ArrayList<Shopping_list>() ;
         mAuth = FirebaseAuth.getInstance();
 
+        toolbar = findViewById(R.id.user_toolbar);
+        addListFAB = findViewById(R.id.add_list_button);
+        setSupportActionBar(toolbar);
+
+        blue = ContextCompat.getColor(getApplicationContext(),R.color.blue);
+        white = ContextCompat.getColor(getApplicationContext(), R.color.white);
         /* deprecated
         Observable<List<Shopping_list>> o =  Firebase.getUserLists(mAuth.getCurrentUser().getUid());
         o.subscribe(new ObserverFirebaseTemplate<List<Shopping_list>>() {
@@ -76,71 +73,49 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
         });
 
 
-        this.arrayAdapter = new ArrayAdapter(this , android.R.layout.simple_list_item_1 ,shopping_Lists ) ;
-
+        this.arrayAdapter = new ListsAdapter(this,shopping_Lists);
         listview.setAdapter(arrayAdapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
 
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(isSelectOn){
+                    if (arrayAdapter.select(i))
+                        view.setBackgroundColor(blue);
+                    else view.setBackgroundColor(white);
+                    if (arrayAdapter.allSelectedItems()==0)
+                        selectMode(false);
+                    toolbar.setTitle(arrayAdapter.allSelectedItems()+" items Selected");
+                }else {
+                    Intent intent = new Intent(ChooseListActivity.this, UserShoppingListActivity.class);
 
-                Intent intent = new Intent(ChooseListActivity.this, UserShoppingListActivity.class);
-
-                Shopping_list listItem = shopping_Lists.get(i);
-                intent.putExtra("listID", listItem.getShopping_list_id());
-                intent.putExtra("listName", listItem.getShopping_list_title());
-                startActivity(intent);
+                    Shopping_list listItem = shopping_Lists.get(i);
+                    intent.putExtra("listID", listItem.getShopping_list_id());
+                    intent.putExtra("listName", listItem.getShopping_list_title());
+                    startActivity(intent);
+                }
             }
         });
         listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                listview.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-                    @Override
-                    public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
-
-                    }
-
-                    @Override
-                    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                        return false;
-                    }
-
-                    @Override
-                    public void onDestroyActionMode(ActionMode actionMode) {
-
-                    }
-                });
+                selectMode(true);
+                arrayAdapter.select(i);
+                toolbar.setTitle(arrayAdapter.allSelectedItems()+" items Selected");
+                view.setBackgroundColor(blue);
                 return true;
             }
         });
 
 
-        //NOT READY!!!!! - problem: how to retrieve user id ??
-        //add new list to database
-        addList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                DialogFragment newFragment = new DialogAddList();
-                newFragment.show(getSupportFragmentManager(), "Add List");
-
-            }
-
-        });
     }
+    public void createNewList(View v){
+        DialogFragment newFragment = new DialogAddList();
+        newFragment.show(getSupportFragmentManager(), "Add List");
 
+    }
+    //delegate between dialog and activity
     @Override
     public void addList(String listName) {
             Shopping_list result = new Shopping_list("",mAuth.getCurrentUser().getUid(),listName);
@@ -148,4 +123,55 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
             Firebase2.pushUserList(mAuth.getCurrentUser().getUid(),result);
             arrayAdapter.notifyDataSetChanged();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.select_mode_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.delete:
+                remove();
+                return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isSelectOn) {
+            selectMode(false);
+            cancel();
+        }
+        else
+            super.onBackPressed();
+    }
+    private void cancel(){
+        arrayAdapter.cancel();
+    }
+    private void remove(){
+        Toast.makeText(getApplicationContext(),arrayAdapter.allSelectedItems()+" items were deleted.",Toast.LENGTH_SHORT);
+        ArrayList<String> listIds = (ArrayList<String>) arrayAdapter.remove();
+        selectMode(false);
+        Firebase2.removeListItems(listIds);
+        Firebase2.setUserLists(mAuth.getCurrentUser().getUid(),shopping_Lists);
+
+    }
+
+    private void selectMode(boolean state){
+        isSelectOn=state;
+        if (state) {
+            toolbar.setVisibility(View.VISIBLE);
+            addListFAB.setVisibility(View.GONE);
+        }
+        else {
+            toolbar.setVisibility(View.GONE);
+            addListFAB.setVisibility(View.VISIBLE);
+        }
+    }
+
 }
