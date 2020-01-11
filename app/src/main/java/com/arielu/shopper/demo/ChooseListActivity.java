@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
@@ -33,6 +34,7 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
     Toolbar toolbar;
     LinearLayout addListFAB;
     FirebaseAuth mAuth ;
+    private SearchView searchView;
     private boolean isSelectOn;
     private int blue,white;
 
@@ -47,9 +49,11 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
         mAuth = FirebaseAuth.getInstance();
 
         toolbar = findViewById(R.id.user_toolbar);
-        addListFAB = findViewById(R.id.add_list_button);
         setSupportActionBar(toolbar);
 
+        addListFAB = findViewById(R.id.add_list_button);
+
+        searchView = findViewById(R.id.lists_filter);
         blue = ContextCompat.getColor(getApplicationContext(),R.color.blue);
         white = ContextCompat.getColor(getApplicationContext(), R.color.white);
         /* deprecated
@@ -108,7 +112,18 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
                 return true;
             }
         });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ChooseListActivity.this.arrayAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
     }
     public void createNewList(View v){
         DialogFragment newFragment = new DialogAddList();

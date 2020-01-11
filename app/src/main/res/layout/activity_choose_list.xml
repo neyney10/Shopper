@@ -20,6 +20,11 @@
         android:visibility="gone"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        <androidx.appcompat.widget.SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:id="@+id/lists_filter"/>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
