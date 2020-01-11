@@ -1,44 +1,27 @@
 package com.arielu.shopper.demo;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.subjects.PublishSubject;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.se.omapi.Session;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arielu.shopper.demo.classes.Branch;
+import com.arielu.shopper.demo.classes.Product;
+import com.arielu.shopper.demo.classes.Shopping_list;
+import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.models.SessionProduct;
 import com.arielu.shopper.demo.models.StoreProductRef;
-import com.arielu.shopper.demo.utilities.ImageDownloader;
-import com.arielu.shopper.demo.classes.Product;
-import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionAdapter;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView;
-import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
+import com.arielu.shopper.demo.utilities.ImageDownloader;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.core.utilities.Tree;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class UserShoppingListActivity extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+
+public class UserShoppingListActivity extends AppCompatActivity{
 
     private TreeMap<String, ArrayList<SessionProduct>> list = new TreeMap<>();
 
@@ -57,8 +46,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
     private boolean isSelectOn;
     private int blue,white;
 
-    private String listID;
-    private String listName;
+    //private String listID;
+    //private String listName;
+    private Shopping_list listObj;
 
     private Branch selectedBranch;
 
@@ -72,15 +62,17 @@ public class UserShoppingListActivity extends AppCompatActivity {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        this.listID = getIntent().getStringExtra("listID");
-        this.listName = getIntent().getStringExtra("listName");
+        //this.listID = getIntent().getStringExtra("listID");
+        //this.listName = getIntent().getStringExtra("listName");
+        this.listObj = (Shopping_list) getIntent().getSerializableExtra("list");
+
         //my edit
         blue = ContextCompat.getColor(getApplicationContext(),R.color.blue);
         white = ContextCompat.getColor(getApplicationContext(), R.color.white);
         //toolbar
         toolbar = findViewById(R.id.user_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(listName);
+        getSupportActionBar().setTitle(listObj.getShopping_list_title());
         //Filter
         searchView = findViewById(R.id.list_filter);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -133,9 +125,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
         });
         pinnedSectionListView.setPinnedSections(R.layout.list_group);
         //get data
-        Firebase2.getListItems(this.listID, (data) -> {
-            if(data==null)
-                return;
+        Firebase2.getListItems(this.listObj.getShopping_list_id(), (data) -> {
+            if(data == null) return;
+
             List<SessionProduct> products = (List<SessionProduct>) data;
             ArrayList<SessionProduct> temp;
             for(SessionProduct p : products)
@@ -277,7 +269,7 @@ public class UserShoppingListActivity extends AppCompatActivity {
     public void btn_saveClick()
     {
         List<SessionProduct> lst = convertProductsMapToList(list);
-        Firebase2.setListProducts(listID,lst);
+        Firebase2.setListProducts(listObj.getShopping_list_id(),lst);
 
         Toast.makeText(UserShoppingListActivity.this,"Saving your list...",Toast.LENGTH_SHORT);
     }
@@ -292,7 +284,9 @@ public class UserShoppingListActivity extends AppCompatActivity {
         // and make an option to change the list -> add new users / remove users.
         // adding new user by their (?)
         Intent intent = new Intent(this, ShoppingListPermissionsActivity.class);
-        intent.putExtra("listID", this.listID);
+        //intent.putExtra("listID", this.listID);
+        //intent.putExtra("listName", this.listName);
+        intent.putExtra("list", listObj);
         startActivity(intent);
     }
 
@@ -302,25 +296,23 @@ public class UserShoppingListActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if(resultCode == Activity.RESULT_OK){
-                    // parse result into a Product.class (serializable).
-                    Product result= Product.fromBundle(data.getParcelableExtra("result"));
-                    // create a SessionProduct from Product using copy-constructor
-                    SessionProduct sessProd = new SessionProduct(result);
+                    // parse result into a SessionProduct.class (serializable / parcelable).
+                    SessionProduct sessProd = SessionProduct.fromBundle(data.getParcelableExtra("result"));
                     // download & set bitmap image to the product.
-                    sessProd.setProductImage(ImageDownloader.getBitmapFromURL(result.getProductImageUrl()));
+                    sessProd.setProductImage(ImageDownloader.getBitmapFromURL(sessProd.getProductImageUrl()));
 
                     // find correct group, if the group does not exists yet, create it.
                     ArrayList<SessionProduct> temp;
-                    Boolean isCategoryExistInView = (list.get(result.getCategoryName()) == null);
+                    Boolean isCategoryExistInView = (list.get(sessProd.getCategoryName()) == null);
                     if(isCategoryExistInView) {
                         temp = new ArrayList<>();
-                        list.put(result.getCategoryName(), temp);
+                        list.put(sessProd.getCategoryName(), temp);
                     } else {
-                        temp = list.get(result.getCategoryName());
+                        temp = list.get(sessProd.getCategoryName());
                     }
 
                     // add the product to the group, dont allow duplicates.
-                    if(!temp.contains(result))
+                    if(!temp.contains(sessProd))
                         temp.add(sessProd);
 
                     // notify adapter that changes were made to the dataset.
@@ -339,15 +331,16 @@ public class UserShoppingListActivity extends AppCompatActivity {
                     getProductsPrice(selectedBranch);
 
                     Firebase2.pushNewSessionlist(FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                            this.listID);
+                            this.listObj.getShopping_list_id());
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     //Write your code if there's no result
                 }
                 break;
         }
-    }
     }//onActivityResult
+
+}
 
 
 

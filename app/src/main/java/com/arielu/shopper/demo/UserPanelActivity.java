@@ -59,11 +59,11 @@ public class UserPanelActivity extends AppCompatActivity {
             List<String> sessLists = (List<String>) data;
             if(sessLists.size() > 0 )
             {
-                Firebase2.getListItems(sessLists.get(0), (data2) -> {
+                Firebase2.getListItems(sessLists.get(sessLists.size()-1), (data2) -> {
                     List<SessionProduct> sessProducts = (List<SessionProduct>) data2;
                     double sum = 0;
                     for(SessionProduct sp : sessProducts)
-                        sum += sp.getProductPrice();
+                        sum += sp.computeTotalPrice();
 
                     ((TextView)findViewById(R.id.tv_list_total_price)).setText(Double.toString(sum)+"₪");
                 });

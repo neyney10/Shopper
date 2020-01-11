@@ -22,13 +22,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ChooseListActivity extends AppCompatActivity implements DialogAddList.DialogListener
 {
     ListView listview ;
-    DatabaseReference dataBaseLists ;
-    DataSnapshot dataSnapshot ;
     ArrayList<Shopping_list> shopping_Lists ;
     ListsAdapter arrayAdapter;
     Toolbar toolbar;
@@ -66,9 +65,12 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
          */
 
         Firebase2.getUserLists(mAuth.getCurrentUser().getUid(),(lists) -> {
+            addAllItemsToList((List<Shopping_list>)lists);
+            arrayAdapter.notifyDataSetChanged();
+        });
 
-            shopping_Lists.clear();
-            shopping_Lists.addAll((List<Shopping_list>)lists);
+        Firebase2.getUserSharedLists(mAuth.getCurrentUser().getUid(),(lists) -> {
+            addAllItemsToList(lists);
             arrayAdapter.notifyDataSetChanged();
         });
 
@@ -91,8 +93,7 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
                     Intent intent = new Intent(ChooseListActivity.this, UserShoppingListActivity.class);
 
                     Shopping_list listItem = shopping_Lists.get(i);
-                    intent.putExtra("listID", listItem.getShopping_list_id());
-                    intent.putExtra("listName", listItem.getShopping_list_title());
+                    intent.putExtra("list", listItem);
                     startActivity(intent);
                 }
             }
@@ -108,12 +109,16 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
             }
         });
 
-
     }
     public void createNewList(View v){
         DialogFragment newFragment = new DialogAddList();
         newFragment.show(getSupportFragmentManager(), "Add List");
 
+    }
+
+    private synchronized void addAllItemsToList(Collection<Shopping_list> list)
+    {
+        shopping_Lists.addAll(list);
     }
     //delegate between dialog and activity
     @Override
@@ -173,5 +178,4 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
             addListFAB.setVisibility(View.VISIBLE);
         }
     }
-
 }

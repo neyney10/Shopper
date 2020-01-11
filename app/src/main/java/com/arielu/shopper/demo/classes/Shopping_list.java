@@ -1,6 +1,8 @@
 package com.arielu.shopper.demo.classes;
 
-public class Shopping_list
+import java.io.Serializable;
+
+public class Shopping_list implements Serializable
 {
     String shopping_list_id ;
     String user_id ;
