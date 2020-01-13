@@ -14,6 +14,7 @@ import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.models.SessionProduct;
 import com.arielu.shopper.demo.models.User;
+import com.arielu.shopper.demo.models.UserSessionData;
 import com.arielu.shopper.demo.utilities.ObserverFirebaseTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -56,10 +57,10 @@ public class UserPanelActivity extends AppCompatActivity {
         Firebase2.getUserListinSession(mAuth.getCurrentUser().getUid(), (data) -> {
             Log.d("firebase_session_lists", data.toString());
 
-            List<String> sessLists = (List<String>) data;
+            List<UserSessionData> sessLists = data;
             if(sessLists.size() > 0 )
             {
-                Firebase2.getListItems(sessLists.get(sessLists.size()-1), (data2) -> {
+                Firebase2.getListItems(sessLists.get(sessLists.size()-1).getListID(), (data2) -> {
                     List<SessionProduct> sessProducts = (List<SessionProduct>) data2;
                     double sum = 0;
                     for(SessionProduct sp : sessProducts)

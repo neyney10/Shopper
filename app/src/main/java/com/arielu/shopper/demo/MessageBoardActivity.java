@@ -3,9 +3,7 @@ package com.arielu.shopper.demo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -13,7 +11,8 @@ import com.arielu.shopper.demo.classes.Branch;
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.models.Message;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.arielu.shopper.demo.models.UserSessionData;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,20 +25,11 @@ public class MessageBoardActivity extends AppCompatActivity {
     ListView listview;
     List<Message> messages;
     MessageAdapter messageAdapter;
-private ImageView add_msg_button ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_board);
-
-        add_msg_button = (ImageView) findViewById(R.id.add_new_message_btn) ;
-        add_msg_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                newMessageDialog() ;
-            }
-        });
 
         retrieveMessagesFromDB(Firebase.userData.getCompanybranchID());
 
@@ -48,17 +38,11 @@ private ImageView add_msg_button ;
         messageAdapter =  new MessageAdapter(getApplicationContext(),messages);
         listview.setAdapter(messageAdapter);
     }
-
-    public void newMessageDialog() {
-        messageDialog msgDialog = new messageDialog() ;
-        msgDialog.show(getSupportFragmentManager() , "msgDialog");
-    }
-
     public void sendMessage(View v){
         // TODO: Ability to create a title.
         // Step 1: get values for constructing a message.
         String title = "Some random title";
-        String content = ((EditText) findViewById(R.id.msg_body)).getText().toString();
+        String content = ((EditText) findViewById(R.id.my_message)).getText().toString();
         String date =  Long.toString(new Date().getTime());
         // Step 2: construct a message from those values.
         Message message = new Message(title, content, date);
@@ -83,12 +67,31 @@ private ImageView add_msg_button ;
 
     public void retrieveMessagesFromDB(String companybranchID)
     {
-         Firebase2.getStoreMessages(companybranchID, (msgsObj) -> {
-             List<Message> msgs = (List<Message>) msgsObj;
-             Log.d("firebase_messages", msgs.toString());
-             messages.clear();
-             messages.addAll(msgs);
-             messageAdapter.notifyDataSetChanged();
-         });
+        if(!companybranchID.equals("0")) // if user is a worker, then it has a companybranchID other than "0".
+        { // if worker.
+            Firebase2.getStoreMessages(companybranchID, (msgsObj) -> {
+                List<Message> msgs = (List<Message>) msgsObj;
+                Log.d("firebase_messages", msgs.toString());
+                messages.clear();
+                messages.addAll(msgs);
+                messageAdapter.notifyDataSetChanged();
+            });
+        }
+        else
+        { // if a regular user.
+            String uID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            Firebase2.getUserListinSession(uID,(data) -> {
+                UserSessionData usd = data.get(data.size()-1);
+
+                Firebase2.getStoreMessages(usd.getCompanybranchID(), (msgsObj) -> {
+                    List<Message> msgs = (List<Message>) msgsObj;
+                    Log.d("firebase_messages", msgs.toString());
+                    messages.clear();
+                    messages.addAll(msgs);
+                    messageAdapter.notifyDataSetChanged();
+                });
+
+            });
+        }
     }
 }
