@@ -11,6 +11,7 @@ import com.arielu.shopper.demo.models.Permission;
 import com.arielu.shopper.demo.models.SessionProduct;
 import com.arielu.shopper.demo.models.StoreProductRef;
 import com.arielu.shopper.demo.models.User;
+import com.arielu.shopper.demo.models.UserSessionData;
 import com.arielu.shopper.demo.utilities.DelegateonDataChangeFunction;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -129,12 +130,12 @@ final public class Firebase2 {
 
     }
 
-    public static void getUserListinSession(String uID, Task task)
+    public static void getUserListinSession(String uID, Task<List<UserSessionData>> task)
     {
         firebaseDBGetRequest("user_session_lists/"+uID,task,(dataSnapshot) -> {
-            List<String> lists = new ArrayList<>();
+            List<UserSessionData> lists = new ArrayList<>();
             for(DataSnapshot dss : dataSnapshot.getChildren())
-                lists.add(dss.getValue(String.class));
+                lists.add(dss.getValue(UserSessionData.class));
 
             return lists;
         });
@@ -262,7 +263,7 @@ final public class Firebase2 {
 
 
     // Save/post message
-    public static void pushNewSessionlist(String uID, String listID)
+    public static void pushNewSessionlist(String uID, String listID, String companybranchID)
     {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -270,8 +271,11 @@ final public class Firebase2 {
 
         String pushedKey = myRef.push().getKey();
 
+        // create the object to be saved.
+        UserSessionData usd = new UserSessionData(listID,companybranchID);
+
         Map<String, Object> map = new HashMap<>();
-        map.put(pushedKey, listID);
+        map.put(pushedKey, usd);
         myRef.updateChildren(map);
     }
 

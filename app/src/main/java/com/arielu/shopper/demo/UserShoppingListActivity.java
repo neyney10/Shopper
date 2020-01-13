@@ -330,7 +330,7 @@ public class UserShoppingListActivity extends AppCompatActivity{
                     getProductsPrice(selectedBranch);
 
                     Firebase2.pushNewSessionlist(FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                            this.listObj.getShopping_list_id());
+                            this.listObj.getShopping_list_id(), (selectedBranch.getCompany_id()+selectedBranch.getBranch_id()));
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     //Write your code if there's no result

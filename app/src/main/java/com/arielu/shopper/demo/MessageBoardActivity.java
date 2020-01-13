@@ -11,6 +11,8 @@ import com.arielu.shopper.demo.classes.Branch;
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.models.Message;
+import com.arielu.shopper.demo.models.UserSessionData;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,12 +67,31 @@ public class MessageBoardActivity extends AppCompatActivity {
 
     public void retrieveMessagesFromDB(String companybranchID)
     {
-         Firebase2.getStoreMessages(companybranchID, (msgsObj) -> {
-             List<Message> msgs = (List<Message>) msgsObj;
-             Log.d("firebase_messages", msgs.toString());
-             messages.clear();
-             messages.addAll(msgs);
-             messageAdapter.notifyDataSetChanged();
-         });
+        if(!companybranchID.equals("0")) // if user is a worker, then it has a companybranchID other than "0".
+        { // if worker.
+            Firebase2.getStoreMessages(companybranchID, (msgsObj) -> {
+                List<Message> msgs = (List<Message>) msgsObj;
+                Log.d("firebase_messages", msgs.toString());
+                messages.clear();
+                messages.addAll(msgs);
+                messageAdapter.notifyDataSetChanged();
+            });
+        }
+        else
+        { // if a regular user.
+            String uID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            Firebase2.getUserListinSession(uID,(data) -> {
+                UserSessionData usd = data.get(data.size()-1);
+
+                Firebase2.getStoreMessages(usd.getCompanybranchID(), (msgsObj) -> {
+                    List<Message> msgs = (List<Message>) msgsObj;
+                    Log.d("firebase_messages", msgs.toString());
+                    messages.clear();
+                    messages.addAll(msgs);
+                    messageAdapter.notifyDataSetChanged();
+                });
+
+            });
+        }
     }
 }
