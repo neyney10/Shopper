@@ -76,7 +76,6 @@ public class BranchesActivity extends AppCompatActivity {
         this.adapter = new ArrayAdapter<Branch>(BranchesActivity.this,R.layout.item_test_sample,R.id.sample_text_view,branches_filtered);
         lv_branches_list.setAdapter(this.adapter);
 
-
         ///////////////////////////////////////////////////////////////
         /////////////// Distance SeekBar and its labels ///////////////
         ///////////////////////////////////////////////////////////////
@@ -85,12 +84,9 @@ public class BranchesActivity extends AppCompatActivity {
         sb_distance_limit.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser) {
-                    distance = (progress * step);
-                    tv_distance_value.setText(Float.toString(distance/1000.0f)); //show in km
-                    filterBranchesByDistance(distance);
-
-                }
+                distance = (progress * step);
+                tv_distance_value.setText(Float.toString(distance/1000.0f)); //show in km
+                filterBranchesByDistance(distance);
                 adapter.notifyDataSetChanged();
             }
 
@@ -116,8 +112,8 @@ public class BranchesActivity extends AppCompatActivity {
 
     private void filterBranchesByDistance(int dist_filter)
     {
-        if(locTracker.getLocation() == null)
-            return ;
+        if(locTracker == null) return;
+
         branches_filtered.clear();
         for (Branch b : branches) {
             if (locTracker.getLocation().distanceTo(b.LocationData()) <= dist_filter)
@@ -195,6 +191,13 @@ public class BranchesActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
                     permissionGranted = true;
+                    locTracker = new LocationTracker(this);
+
+                    // refresh / update UI
+                    SeekBar sb_distance_limit = findViewById(R.id.sb_distance_limit);
+                    int progressValue = sb_distance_limit.getProgress();
+                    sb_distance_limit.setProgress(1);
+                    sb_distance_limit.setProgress(progressValue);
 
                 } else {
                     // permission denied, boo!
