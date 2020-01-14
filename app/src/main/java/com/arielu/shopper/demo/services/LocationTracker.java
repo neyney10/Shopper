@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -70,7 +71,25 @@ public class LocationTracker extends Service implements LocationListener {
                 this.canGetLocation = true;
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
-                    if (ContextCompat.checkSelfPermission(this, mPermission) != PackageManager.PERMISSION_GRANTED)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (mContext.checkSelfPermission(mPermission) != PackageManager.PERMISSION_GRANTED)
+                            locationManager.requestLocationUpdates(
+                                    LocationManager.NETWORK_PROVIDER,
+                                    MIN_TIME_BW_UPDATES,
+                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    }
+
+                    Log.d("Network", "Network");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                        if (location != null) {
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
+                        }
+                    }
+                    else if (ContextCompat.checkSelfPermission(this, mPermission) != PackageManager.PERMISSION_GRANTED)
                         locationManager.requestLocationUpdates(
                             LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES,
@@ -113,7 +132,7 @@ public class LocationTracker extends Service implements LocationListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return location;
     }
 

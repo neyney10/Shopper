@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Spinner spinner;
     private EditText email,password,confirmPassword,phoneNumber,name;
     private TextView emailText,passwordText,confirmPasswordText, phoneNumberText,nameText;
+    private ProgressBar progressBar;
     private boolean isValidEmail,isValidPassword,isValidConfirmPassword,isValidPhoneNumber,isValidName;
     private FirebaseAuth mAuth;
     private User userData;
@@ -50,6 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.spinner_items,android.R.layout.simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        //ProgressBar
+        progressBar = findViewById(R.id.spinner_loader);
         //EditText
         email = findViewById(R.id.email_field);
         password = findViewById(R.id.password_field);
@@ -214,13 +218,11 @@ public class RegisterActivity extends AppCompatActivity {
                             intent = new Intent(getApplicationContext(), WorkerPanelActivity.class);
                             break;
                     }
+                    progressBar.setVisibility(View.GONE);
                     startActivity(intent);
                     finish();
                 }
             });
-
-            Intent intent = new Intent(this, UserPanelActivity.class);
-            startActivity(intent);
         }
         else
         { // not signed in.
@@ -231,6 +233,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void createNewAccountFirebase(String email, String password,String name,String phoneNumber,int userType)
     {
+        progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override

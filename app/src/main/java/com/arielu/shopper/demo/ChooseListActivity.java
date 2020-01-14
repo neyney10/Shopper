@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
     LinearLayout addListFAB;
     FirebaseAuth mAuth ;
     private SearchView searchView;
+    private ProgressBar progressBar;
     private boolean isSelectOn;
     private int blue,white;
 
@@ -54,6 +56,7 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
         addListFAB = findViewById(R.id.add_list_button);
 
         searchView = findViewById(R.id.lists_filter);
+        progressBar = findViewById(R.id.spinner_loader);
         blue = ContextCompat.getColor(getApplicationContext(),R.color.blue);
         white = ContextCompat.getColor(getApplicationContext(), R.color.white);
         /* deprecated
@@ -69,7 +72,9 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
          */
 
         Firebase2.getUserLists(mAuth.getCurrentUser().getUid(),(lists) -> {
+            progressBar.setVisibility(View.VISIBLE);
             addAllItemsToList((List<Shopping_list>)lists);
+            progressBar.setVisibility(View.GONE);
             arrayAdapter.notifyDataSetChanged();
         });
 
@@ -92,7 +97,7 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
                     else view.setBackgroundColor(white);
                     if (arrayAdapter.allSelectedItems()==0)
                         selectMode(false);
-                    toolbar.setTitle(arrayAdapter.allSelectedItems()+" items Selected");
+                    toolbar.setTitle(arrayAdapter.allSelectedItems()+" Selected");
                 }else {
                     Intent intent = new Intent(ChooseListActivity.this, UserShoppingListActivity.class);
 
@@ -107,7 +112,7 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 selectMode(true);
                 arrayAdapter.select(i);
-                toolbar.setTitle(arrayAdapter.allSelectedItems()+" items Selected");
+                toolbar.setTitle(arrayAdapter.allSelectedItems()+" Selected");
                 view.setBackgroundColor(blue);
                 return true;
             }
