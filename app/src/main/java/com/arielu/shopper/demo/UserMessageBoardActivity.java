@@ -37,27 +37,27 @@ public class UserMessageBoardActivity extends AppCompatActivity {
     }
 
 
-    public void sendMessage(View v){
-        // TODO: Ability to create a title.
-        // Step 1: get values for constructing a message.
-        String title = "Some random title";
-        String content = ((EditText) findViewById(R.id.msg_body)).getText().toString();
-        String date =  Long.toString(new Date().getTime());
-        // Step 2: construct a message from those values.
-        Message message = new Message(title, content, date);
-        // Step 3: store the message in DB.
-        Firebase2.pushNewStoreMessage(Firebase.userData.getCompanybranchID(), message);
-        Toast.makeText(getApplicationContext(), "sending message...", Toast.LENGTH_SHORT).show();
-        // Step 4: update UI -> add the new message to the list.
-        messages.add(message);
-        messageAdapter.notifyDataSetChanged();
-    }
+//    public void sendMessage(View v){
+//        // TODO: Ability to create a title.
+//        // Step 1: get values for constructing a message.
+//        String title = "Some random title";
+//        String content = ((EditText) findViewById(R.id.msg_body)).getText().toString();
+//        String date =  Long.toString(new Date().getTime());
+//        // Step 2: construct a message from those values.
+//        Message message = new Message(title, content, date);
+//        // Step 3: store the message in DB.
+//        Firebase2.pushNewStoreMessage(Firebase.userData.getCompanybranchID(), message);
+//        Toast.makeText(getApplicationContext(), "sending message...", Toast.LENGTH_SHORT).show();
+//        // Step 4: update UI -> add the new message to the list.
+//        messages.add(message);
+//        messageAdapter.notifyDataSetChanged();
+//    }
 
-    // for testing purposes only.
+ //    for testing purposes only.
     public List<Message> generateFakeMessages()
     {
         List<Message> msgs = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 0; i++) {
             msgs.add(new Message("Title "+i,"this fake message","12/24/2019"));
         }
 
