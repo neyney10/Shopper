@@ -42,7 +42,7 @@ public class MessageAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.list_message, null);
         }
         ((TextView)view.findViewById(R.id.message_title)).setText(messages.get(i).getTitle());
-        ((TextView)view.findViewById(R.id.message_date)).setText(messages.get(i).getDate());
+        ((TextView)view.findViewById(R.id.message_date)).setText(messages.get(i).retrieveParsedDate());
         ((TextView)view.findViewById(R.id.message_content)).setText(messages.get(i).getContent());
         return view;
     }

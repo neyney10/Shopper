@@ -25,8 +25,9 @@ import androidx.core.content.ContextCompat;
 
 public class PinnedSectionAdapter extends BaseExpandableListAdapter implements PinnedSectionListView.PinnedSection, AbsListView.OnScrollListener, Filterable {
     private Context context;
-    public TreeMap<Integer,List<Integer>> selectedItems;
+    private TreeMap<Integer,List<Integer>> selectedItems;
     private TreeMap<String,ArrayList<SessionProduct>> displayList, list;
+    private int countSelectedItems=0;
     private final int blue,white;
 
     public PinnedSectionAdapter(Context context, TreeMap<String, ArrayList<SessionProduct>> list) {
@@ -45,7 +46,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
 
     @Override
     public int getChildrenCount(int i) {
-            if (displayList.containsKey(getGroup(i)))
+            if (displayList.containsKey(""+getGroup(i)))
         return displayList.get(getGroup(i)).size();
             return 0;
     }
@@ -131,7 +132,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
     }
     public void remove(){
         for (int group:selectedItems.keySet()) {
-            String currGroup = (String) getGroup(group);
+            String currGroup = "" + this.list.keySet().toArray()[group];
             ArrayList list = this.list.get(currGroup);
             Collections.sort(selectedItems.get(group),Collections.<Integer>reverseOrder());
             for (int child:selectedItems.get(group)) {
@@ -145,7 +146,14 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
         this.displayList = list;
         notifyDataSetChanged();
     }
-
+    public void cancel(){
+        selectedItems.clear();
+        countSelectedItems=0;
+        notifyDataSetChanged();
+    }
+public int totalSelectedItems(){
+        return countSelectedItems;
+}
     public boolean select(int group, int child){
         ArrayList<Integer> list;
         if (selectedItems.containsKey(group)){
@@ -155,6 +163,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
                     selectedItems.remove(group);
                 else
                     list.remove(child);
+                countSelectedItems-=1;
                 return false;
             }else list.add(child);
         }else{
@@ -162,6 +171,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             list.add(child);
             selectedItems.put(group,list);
         }
+        countSelectedItems+=1;
         return true;
     }
     @Override
@@ -174,13 +184,13 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
                 int count=0;
                 charSequence = charSequence.toString().toLowerCase();
                 for (String group: list.keySet()) {
-                    if (group.toLowerCase().startsWith(charSequence.toString())) {
+                    if (group.toLowerCase().contains(charSequence.toString())) {
                         filterData.put(group, list.get(group));
                         count+= list.get(group).size();
                     }
                     else
                         for (SessionProduct product: list.get(group)) {
-                            if (product.getProductName().toLowerCase().startsWith(charSequence.toString())){
+                            if (product.getProductName().toLowerCase().contains(charSequence.toString())){
                                 if (filterData.containsKey(group))
                                     filterData.get(group).add(product);
                                 else {

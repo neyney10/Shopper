@@ -34,7 +34,7 @@ public class MessageBoardActivity extends AppCompatActivity {
         retrieveMessagesFromDB(Firebase.userData.getCompanybranchID());
 
         listview = findViewById(R.id.message_list);
-        messages = generateFakeMessages();
+        messages = new ArrayList<>();
         messageAdapter =  new MessageAdapter(getApplicationContext(),messages);
         listview.setAdapter(messageAdapter);
     }

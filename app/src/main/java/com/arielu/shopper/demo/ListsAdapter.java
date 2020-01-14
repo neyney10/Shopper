@@ -102,7 +102,7 @@ public class ListsAdapter extends BaseAdapter implements Filterable {
                 int count=0;
                 charSequence = charSequence.toString().toLowerCase();
                 for (Shopping_list shopping_list: list) {
-                    if (shopping_list.getShopping_list_title().toLowerCase().startsWith(charSequence.toString())) {
+                    if (shopping_list.getShopping_list_title().toLowerCase().contains(charSequence.toString())) {
                         filterData.add(shopping_list);
                         count+= 1;
                     }

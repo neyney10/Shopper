@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.arielu.shopper.demo.classes.Branch;
@@ -41,6 +42,7 @@ public class UserShoppingListActivity extends AppCompatActivity{
 
     private Toolbar toolbar;
     private SearchView searchView;
+    private ProgressBar progressBar;
     private PinnedSectionAdapter pinnedSectionAdapter;
     private PinnedSectionListView pinnedSectionListView;
     private boolean isSelectOn;
@@ -67,6 +69,7 @@ public class UserShoppingListActivity extends AppCompatActivity{
         this.listObj = (Shopping_list) getIntent().getSerializableExtra("list");
 
         //my edit
+        progressBar = findViewById(R.id.spinner_loader);
         blue = ContextCompat.getColor(getApplicationContext(),R.color.blue);
         white = ContextCompat.getColor(getApplicationContext(), R.color.white);
         //toolbar
@@ -103,6 +106,7 @@ public class UserShoppingListActivity extends AppCompatActivity{
                     selectMode(true);
                     view.setBackgroundColor(blue);
                     ((PinnedSectionAdapter)((PinnedSectionListView)adapterView).getExpandableListAdapter()).select(group,child);
+                    toolbar.setTitle(pinnedSectionAdapter.totalSelectedItems()+" Selected");
                 }
                 return true;
             }
@@ -115,8 +119,9 @@ public class UserShoppingListActivity extends AppCompatActivity{
                         view.setBackgroundColor(blue);
                     else
                         view.setBackgroundColor(white);
-                    if (pinnedSectionAdapter.selectedItems.isEmpty())
+                    if (pinnedSectionAdapter.totalSelectedItems()==0)
                         selectMode(false);
+                    toolbar.setTitle(pinnedSectionAdapter.totalSelectedItems()+" Selected");
                 }else {
                     Product product = (Product) expandableListView.getExpandableListAdapter().getChild(i, i1);
                 }
@@ -125,6 +130,7 @@ public class UserShoppingListActivity extends AppCompatActivity{
         });
         pinnedSectionListView.setPinnedSections(R.layout.list_group);
         //get data
+        progressBar.setVisibility(View.VISIBLE);
         Firebase2.getListItems(this.listObj.getShopping_list_id(), (data) -> {
             if(data == null) return;
 
@@ -145,7 +151,7 @@ public class UserShoppingListActivity extends AppCompatActivity{
                 temp.add(p);
                 list.put(p.getCategoryName(),temp);
             }
-
+            progressBar.setVisibility(View.GONE);
             pinnedSectionAdapter.notifyDataSetChanged();
             expandAll();
 
@@ -187,8 +193,9 @@ public class UserShoppingListActivity extends AppCompatActivity{
     }
     private void selectMode(boolean state){
         isSelectOn=state;
+        if (!state)
+            toolbar.setTitle(listObj.getShopping_list_title());
         invalidateOptionsMenu();
-        pinnedSectionAdapter.notifyDataSetChanged();
     }
     private void expandAll()
     {
@@ -200,13 +207,15 @@ public class UserShoppingListActivity extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
-        if (isSelectOn) {
-            pinnedSectionAdapter.selectedItems.clear();
-            selectMode(false);
-        }else
+        if (isSelectOn)
+            cancel();
+        else
         super.onBackPressed();
     }
-
+    public void cancel(){
+        pinnedSectionAdapter.cancel();
+        selectMode(false);
+    }
     public void myCart(View view) {
         Toast toast = Toast.makeText(getApplicationContext(), "worked", Toast.LENGTH_SHORT);
         toast.show();
@@ -331,7 +340,7 @@ public class UserShoppingListActivity extends AppCompatActivity{
                     getProductsPrice(selectedBranch);
 
                     Firebase2.pushNewSessionlist(FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                            this.listObj.getShopping_list_id(), (selectedBranch.getCompany_id()+selectedBranch.getBranch_id()));
+                            this.listObj.getShopping_list_id(), (selectedBranch.getCompany_id()+"-"+selectedBranch.getBranch_id()));
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     //Write your code if there's no result
