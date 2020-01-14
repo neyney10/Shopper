@@ -74,11 +74,11 @@ public class LoginActivity extends AppCompatActivity  {
         updateUserUI(currentUser);
     }
     private void updateUserUI(FirebaseUser currentUser) {
-        progressBar.setVisibility(View.VISIBLE);
         // if not connected then "currentUser" is equal to null
         if(currentUser != null)
         { // signed in.
             // Switch to user's panel activity.
+            progressBar.setVisibility(View.VISIBLE);
             Observable<User> o = Firebase.getUserData(currentUser.getUid());
             o.subscribe(new ObserverFirebaseTemplate<User>() {
                 @Override
@@ -158,6 +158,5 @@ public class LoginActivity extends AppCompatActivity  {
         Intent intent = new Intent(this,RegisterActivity.class);
         startActivity(intent);
     }
-
 
 }

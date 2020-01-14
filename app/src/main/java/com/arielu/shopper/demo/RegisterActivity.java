@@ -233,7 +233,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void createNewAccountFirebase(String email, String password,String name,String phoneNumber,int userType)
     {
-        progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -241,6 +240,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("Firebase", "createUserWithEmail:success");
+                            progressBar.setVisibility(View.VISIBLE);
                             user = mAuth.getCurrentUser();
                             userData = new User(name,phoneNumber,userType);
                             Firebase.setUserData(user.getUid(),userData);
