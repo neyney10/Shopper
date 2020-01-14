@@ -46,7 +46,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
 
     @Override
     public int getChildrenCount(int i) {
-            if (displayList.containsKey(getGroup(i)))
+            if (displayList.containsKey(""+getGroup(i)))
         return displayList.get(getGroup(i)).size();
             return 0;
     }
@@ -132,7 +132,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
     }
     public void remove(){
         for (int group:selectedItems.keySet()) {
-            String currGroup = (String) getGroup(group);
+            String currGroup = "" + this.list.keySet().toArray()[group];
             ArrayList list = this.list.get(currGroup);
             Collections.sort(selectedItems.get(group),Collections.<Integer>reverseOrder());
             for (int child:selectedItems.get(group)) {
