@@ -52,9 +52,9 @@ public class messageDialog extends AppCompatDialogFragment {
                         msg_body = view.findViewById(R.id.msg_body);
                         String titleStr = msg_title.getText().toString() ;
                         String msgBodyStr = msg_body.getText().toString() ;
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-dd") ;
-                        String date =  sdf.format(new Date());
-
+//                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy") ;
+//                        String date =  sdf.format(new Date());
+                        String date =  Long.toString(new Date().getTime());
                         // Step 2: construct a message from those values.
                         Message message = new Message(titleStr, msgBodyStr, date);
                         // messageBoardActivity.sendMessage(message);

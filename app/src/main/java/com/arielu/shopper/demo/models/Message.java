@@ -43,7 +43,6 @@ public class Message {
 
     public String retrieveParsedDate()
     {
-
         Timestamp ts = new Timestamp(Long.parseLong(getDate()));
         Date date = new Date(ts.getTime());
         DateFormat f = new SimpleDateFormat("dd-MM-yyyy");

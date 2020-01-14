@@ -20,8 +20,9 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
-public class MessageBoardActivity extends AppCompatActivity {
+public class MessageBoardActivity extends AppCompatActivity implements messageDialog.DialogListener {
     ListView listview;
     List<Message> messages;
     MessageAdapter messageAdapter;
@@ -54,6 +55,11 @@ public class MessageBoardActivity extends AppCompatActivity {
 //        messageAdapter.notifyDataSetChanged();
 //    }
 
+
+    public void addNewMessage(View view){
+        DialogFragment dialogFragment = new messageDialog() ;
+        dialogFragment.show(getSupportFragmentManager() , "add message");
+    }
     // for testing purposes only.
     public List<Message> generateFakeMessages()
     {
@@ -93,5 +99,14 @@ public class MessageBoardActivity extends AppCompatActivity {
 
             });
         }
+    }
+
+    @Override
+    public void addMessage(Message msg) {
+        Firebase2.pushNewStoreMessage(Firebase.userData.getCompanybranchID(), msg);
+        Toast.makeText(getApplicationContext(), "sending message...", Toast.LENGTH_SHORT).show();
+        // Step 4: update UI -> add the new message to the list.
+        messages.add(msg);
+        messageAdapter.notifyDataSetChanged();
     }
 }
