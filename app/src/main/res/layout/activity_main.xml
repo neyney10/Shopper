@@ -10,20 +10,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/first_activity_background"
         android:orientation="vertical"
+        android:background="@drawable/first_activity_background"
         tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="482dp"><![CDATA[>
-
-
-
-
-
-
-
-
-
-        ]]>
+        tools:layout_editor_absoluteY="482dp">
 
         <ImageView
             android:id="@+id/imageView"
