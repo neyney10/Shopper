@@ -10,12 +10,18 @@
         android:layout_gravity="center"
         android:text="Product Quantity"
         android:textSize="29dp"></TextView>
-
+<!--
     <Spinner
         android:id="@+id/spin_quantity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:spinnerMode="dialog" />
+        -->
+    <NumberPicker
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/picker_quantity"
+        android:layout_margin="10dp"/>
 
 
 </LinearLayout>

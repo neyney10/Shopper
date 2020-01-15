@@ -96,7 +96,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.list_item, null);
         }
-        Product currItem = (Product) getChild(i,i1);
+        SessionProduct currItem = (SessionProduct) getChild(i,i1);
         if(currItem instanceof SessionProduct)
             ((TextView)view.findViewById(R.id.item_quantity)).setText("#"+((SessionProduct)currItem).getQuantity());
         ((TextView)view.findViewById(R.id.item_name)).setText(currItem.getProductName());
@@ -106,6 +106,9 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             view.setBackgroundColor(blue);
         else
             view.setBackgroundColor(white);
+        if (currItem.getIsBought())
+            view.setAlpha((float) 0.3);
+        else view.setAlpha(1);
         return view;
     }
 
@@ -140,6 +143,19 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
                     this.list.remove(currGroup);
                 else
                     list.remove(child);
+            }
+        }
+        selectedItems.clear();
+        this.displayList = list;
+        notifyDataSetChanged();
+    }
+    public void done(){
+        for (int group:selectedItems.keySet()) {
+            String currGroup = "" + this.list.keySet().toArray()[group];
+            ArrayList list = this.list.get(currGroup);
+            for (int child:selectedItems.get(group)) {
+                SessionProduct product = (SessionProduct) list.get(child);
+                product.setIsBought(true);
             }
         }
         selectedItems.clear();

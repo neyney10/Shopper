@@ -22,6 +22,7 @@ import com.arielu.shopper.demo.models.StoreProductRef;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionAdapter;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView;
 import com.arielu.shopper.demo.utilities.ImageDownloader;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -34,9 +35,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
-public class UserShoppingListActivity extends AppCompatActivity{
+public class UserShoppingListActivity extends AppCompatActivity implements DialogAddProductQuantity.DialogListener {
 
     private TreeMap<String, ArrayList<SessionProduct>> list = new TreeMap<>();
 
@@ -45,9 +47,10 @@ public class UserShoppingListActivity extends AppCompatActivity{
     private ProgressBar progressBar;
     private PinnedSectionAdapter pinnedSectionAdapter;
     private PinnedSectionListView pinnedSectionListView;
+
     private boolean isSelectOn;
     private int blue,white;
-
+    private SessionProduct lastClicked;
     //private String listID;
     //private String listName;
     private Shopping_list listObj;
@@ -123,7 +126,15 @@ public class UserShoppingListActivity extends AppCompatActivity{
                         selectMode(false);
                     toolbar.setTitle(pinnedSectionAdapter.totalSelectedItems()+" Selected");
                 }else {
-                    Product product = (Product) expandableListView.getExpandableListAdapter().getChild(i, i1);
+                    SessionProduct product = (SessionProduct) expandableListView.getExpandableListAdapter().getChild(i, i1);
+                    if (product.getIsBought()){
+                        product.setIsBought(false);
+                        pinnedSectionAdapter.notifyDataSetChanged();
+                    }else {
+                        lastClicked = product;
+                        DialogFragment dialogFragment = new DialogAddProductQuantity();
+                        dialogFragment.show(getSupportFragmentManager(), "Change quantity");
+                    }
                 }
                 return true;
             }
@@ -162,7 +173,7 @@ public class UserShoppingListActivity extends AppCompatActivity{
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (isSelectOn)
-            getMenuInflater().inflate(R.menu.select_mode_menu,menu);
+            getMenuInflater().inflate(R.menu.products_select_mode_menu,menu);
         else
             getMenuInflater().inflate(R.menu.user_list_menu,menu);
         return super.onPrepareOptionsMenu(menu);
@@ -185,6 +196,10 @@ public class UserShoppingListActivity extends AppCompatActivity{
                 return true;
             case R.id.delete:
                 pinnedSectionAdapter.remove();
+                selectMode(false);
+                return true;
+            case R.id.done:
+                pinnedSectionAdapter.done();
                 selectMode(false);
                 return true;
                 default:
@@ -349,6 +364,11 @@ public class UserShoppingListActivity extends AppCompatActivity{
         }
     }//onActivityResult
 
+    @Override
+    public void addQuantity(int quantity) {
+        lastClicked.setQuantity(quantity);
+        pinnedSectionAdapter.notifyDataSetChanged();
+    }
 }
 
 
