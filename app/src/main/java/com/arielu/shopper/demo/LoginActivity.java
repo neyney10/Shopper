@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import io.reactivex.rxjava3.core.Observable;
 
 import android.content.Intent;
@@ -31,7 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 
-public class LoginActivity extends AppCompatActivity  {
+public class LoginActivity extends AppCompatActivity implements DialogForgotPassword.DialogListener {
 
     //// Private variables - UI Views. ////
     private EditText editTextEmail, editTextPassword;
@@ -158,5 +159,14 @@ public class LoginActivity extends AppCompatActivity  {
         Intent intent = new Intent(this,RegisterActivity.class);
         startActivity(intent);
     }
+    public void forgotPassword(View view){
+        DialogFragment dialogFragment = new DialogForgotPassword();
+        dialogFragment.show(getSupportFragmentManager(),"forgot password");
+    }
 
+    @Override
+    public void sendToEmail(String email) {
+        email = email.trim();
+        mAuth.sendPasswordResetEmail(email);
+    }
 }

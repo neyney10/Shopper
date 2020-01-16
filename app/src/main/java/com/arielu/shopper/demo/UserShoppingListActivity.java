@@ -1,6 +1,8 @@
 package com.arielu.shopper.demo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -199,8 +201,7 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
                 btn_permissionsClick();
                 return true;
             case R.id.delete:
-                pinnedSectionAdapter.remove();
-                selectMode(false);
+                remove();
                 return true;
             case R.id.done:
                 pinnedSectionAdapter.done();
@@ -241,6 +242,22 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
     public void cancel(){
         pinnedSectionAdapter.cancel();
         selectMode(false);
+    }
+    public void remove(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.delete).setMessage(R.string.delete_message).setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                pinnedSectionAdapter.remove();
+                selectMode(false);
+            }
+        }).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        }).create();
+        builder.show();
     }
     public void myCart(View view) {
         Toast toast = Toast.makeText(getApplicationContext(), "worked", Toast.LENGTH_SHORT);
