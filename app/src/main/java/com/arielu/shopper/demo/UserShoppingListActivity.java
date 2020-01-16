@@ -79,6 +79,8 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
         toolbar = findViewById(R.id.user_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(listObj.getShopping_list_title());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         //Filter
         searchView = findViewById(R.id.list_filter);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -106,10 +108,12 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
                     int group = pinnedSectionListView.getPackedPositionGroup(l);
                     int child = pinnedSectionListView.getPackedPositionChild(l);
                     //TODO function set select mode for delete,new list,sum of selected items,etc...
-                    selectMode(true);
-                    view.setBackgroundColor(blue);
-                    ((PinnedSectionAdapter)((PinnedSectionListView)adapterView).getExpandableListAdapter()).select(group,child);
-                    toolbar.setTitle(pinnedSectionAdapter.totalSelectedItems()+" Selected");
+                    if (!isSelectOn) {
+                        selectMode(true);
+                        view.setBackgroundColor(blue);
+                        ((PinnedSectionAdapter) ((PinnedSectionListView) adapterView).getExpandableListAdapter()).select(group, child);
+                        toolbar.setTitle(pinnedSectionAdapter.totalSelectedItems() + " Selected");
+                    }
                 }
                 return true;
             }
@@ -122,9 +126,9 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
                         view.setBackgroundColor(blue);
                     else
                         view.setBackgroundColor(white);
+                    toolbar.setTitle(pinnedSectionAdapter.totalSelectedItems()+" Selected");
                     if (pinnedSectionAdapter.totalSelectedItems()==0)
                         selectMode(false);
-                    toolbar.setTitle(pinnedSectionAdapter.totalSelectedItems()+" Selected");
                 }else {
                     SessionProduct product = (SessionProduct) expandableListView.getExpandableListAdapter().getChild(i, i1);
                     if (product.getIsBought()){
@@ -227,6 +231,13 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
         else
         super.onBackPressed();
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
+    }
+
     public void cancel(){
         pinnedSectionAdapter.cancel();
         selectMode(false);
