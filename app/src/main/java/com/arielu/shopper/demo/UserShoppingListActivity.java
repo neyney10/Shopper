@@ -4,11 +4,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
@@ -24,6 +29,7 @@ import com.arielu.shopper.demo.models.StoreProductRef;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionAdapter;
 import com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView;
 import com.arielu.shopper.demo.utilities.ImageDownloader;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -33,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -45,6 +52,7 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
     private TreeMap<String, ArrayList<SessionProduct>> list = new TreeMap<>();
 
     private Toolbar toolbar;
+    private BottomNavigationView bottomNavigationView;
     private SearchView searchView;
     private ProgressBar progressBar;
     private PinnedSectionAdapter pinnedSectionAdapter;
@@ -83,6 +91,49 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
         getSupportActionBar().setTitle(listObj.getShopping_list_title());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //bottomNavigation
+        //root check to remove navigation if keyboard up
+        final View root = findViewById(R.id.activity_root);
+        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = root.getRootView().getHeight() - root.getHeight();
+                if (heightDiff > dpToPx(200)) { // if more than 200 dp, it's probably a keyboard...
+                    bottomNavigationView.setVisibility(View.GONE);
+                }else{
+                    if (bottomNavigationView.getVisibility()==View.GONE) {
+                        bottomNavigationView.setAlpha(0f);
+                        bottomNavigationView.setVisibility(View.VISIBLE);
+                        bottomNavigationView.animate().alpha(1f).setDuration(500);
+                    }
+                }
+            }
+        });
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        //disable highlight the last selected item in navigation
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            bottomNavigationView.setItemIconTintList(getColorStateList(R.color.bottom_navigation_color_icon));
+            bottomNavigationView.setItemTextColor(getColorStateList(R.color.bottom_navigation_color_icon));
+        }else {
+            bottomNavigationView.setItemIconTintList(getResources().getColorStateList(R.color.bottom_navigation_color_icon));
+            bottomNavigationView.setItemTextColor(getResources().getColorStateList(R.color.bottom_navigation_color_icon));
+        }
+        bottomNavigationView.setItemTextAppearanceInactive(bottomNavigationView.getItemTextAppearanceActive());
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()){
+                    case R.id.branch:
+                        btn_searchBranchesClick();
+                        return true;
+                    case R.id.user_permission:
+                        btn_permissionsClick();
+                        return true;
+                        default:
+                            return false;
+                }
+            }
+        });
         //Filter
         searchView = findViewById(R.id.list_filter);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -193,12 +244,6 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
                 return true;
             case R.id.save_list:
                 btn_saveClick();
-                return true;
-            case R.id.branch:
-                btn_searchBranchesClick();
-                return true;
-            case R.id.user_permission:
-                btn_permissionsClick();
                 return true;
             case R.id.delete:
                 remove();
@@ -396,6 +441,10 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
     public void addQuantity(int quantity) {
         lastClicked.setQuantity(quantity);
         pinnedSectionAdapter.notifyDataSetChanged();
+    }
+    public float dpToPx(float valueInDp) {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
 }
 

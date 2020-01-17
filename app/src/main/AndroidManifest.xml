@@ -19,7 +19,7 @@
         <activity android:name=".BranchesActivity" />
         <activity android:name=".ShoppingListPermissionsActivity" />
         <activity android:name=".SearchItemsActivity" />
-        <activity android:name=".UserShoppingListActivity" />
+        <activity android:name=".UserShoppingListActivity" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ChooseListActivity" />
         <activity android:name=".UserPanelActivity" />
         <activity android:name=".WorkerPanelActivity" />

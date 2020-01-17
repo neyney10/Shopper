@@ -1,6 +1,7 @@
 package com.arielu.shopper.demo.pinnedsectionlistview;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,14 @@ import com.arielu.shopper.demo.classes.Product;
 import com.arielu.shopper.demo.models.SessionProduct;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import androidx.core.content.ContextCompat;
 
@@ -98,7 +103,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
         }
         SessionProduct currItem = (SessionProduct) getChild(i,i1);
         if(currItem instanceof SessionProduct)
-            ((TextView)view.findViewById(R.id.item_quantity)).setText("#"+((SessionProduct)currItem).getQuantity());
+            ((TextView)view.findViewById(R.id.item_quantity)).setText("X"+((SessionProduct)currItem).getQuantity());
         ((TextView)view.findViewById(R.id.item_name)).setText(currItem.getProductName());
         ((TextView)view.findViewById(R.id.item_price)).setText("\u20AA"+currItem.getProductPrice());
         ((ImageView)view.findViewById(R.id.item_image)).setImageBitmap(currItem.ProductImage());
@@ -134,7 +139,14 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
 
     }
     public void remove(){
-        for (int group:selectedItems.keySet()) {
+        SortedSet<Integer> sorted = new TreeSet<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2.compareTo(o1);
+            }
+        });
+        sorted.addAll(selectedItems.keySet());
+        for (int group:sorted) {
             String currGroup = "" + this.list.keySet().toArray()[group];
             ArrayList list = this.list.get(currGroup);
             Collections.sort(selectedItems.get(group),Collections.<Integer>reverseOrder());
@@ -146,6 +158,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             }
         }
         selectedItems.clear();
+        countSelectedItems=0;
         this.displayList = list;
         notifyDataSetChanged();
     }
@@ -159,6 +172,7 @@ public class PinnedSectionAdapter extends BaseExpandableListAdapter implements P
             }
         }
         selectedItems.clear();
+        countSelectedItems=0;
         this.displayList = list;
         notifyDataSetChanged();
     }
