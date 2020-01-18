@@ -151,9 +151,10 @@
             app:layout_constraintVertical_bias="0.904" />
 
         <ImageView
-            android:id="@+id/imageView8"
+            android:id="@+id/imgbtn_mycart"
             android:layout_width="188dp"
             android:layout_height="299dp"
+            android:onClick="imgbtn_mycartClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

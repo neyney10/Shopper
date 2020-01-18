@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.arielu.shopper.demo.classes.Shopping_list;
 import com.arielu.shopper.demo.database.Firebase;
 import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.models.SessionProduct;
@@ -27,9 +28,14 @@ public class UserPanelActivity extends AppCompatActivity {
 
     //// Firebase authentication ////
     private FirebaseAuth mAuth;
+
+
     EditText editTextName ;
     Spinner list ;
     Button addList ;
+
+    private String sessionListID = null;
+
 
 
     @Override
@@ -67,8 +73,12 @@ public class UserPanelActivity extends AppCompatActivity {
                         sum += sp.computeTotalPrice();
 
                     ((TextView)findViewById(R.id.tv_list_total_price)).setText(Double.toString(sum)+"₪");
+
                 });
             }
+
+            // update also the button leading to the list itself in session.
+            sessionListID = sessLists.get(sessLists.size()-1).getListID();
         });
     }
 
@@ -99,5 +109,22 @@ public class UserPanelActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, UserMessageBoardActivity.class);
         startActivity(intent);
+    }
+
+    public void imgbtn_mycartClick(View view)
+    {
+        if(sessionListID == null) return;
+
+        Firebase2.getShoppingListMetaDataByID(sessionListID, FirebaseAuth.getInstance().getCurrentUser().getUid(), (data) -> {
+            if(data == null) return;
+
+            Shopping_list list = data.get(data.size()-1);
+
+            Intent intent = new Intent(this, UserShoppingListActivity.class);
+            intent.putExtra("list",list);
+            startActivity(intent);
+        });
+
+
     }
 }

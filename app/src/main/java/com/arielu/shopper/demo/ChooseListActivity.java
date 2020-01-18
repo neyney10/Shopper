@@ -29,12 +29,12 @@ import java.util.List;
 
 public class ChooseListActivity extends AppCompatActivity implements DialogAddList.DialogListener
 {
-    ListView listview ;
-    ArrayList<Shopping_list> shopping_Lists ;
-    ListsAdapter arrayAdapter;
-    Toolbar toolbar;
-    LinearLayout addListFAB;
-    FirebaseAuth mAuth ;
+    private ListView listview ;
+    private ArrayList<Shopping_list> shopping_Lists ;
+    private ListsAdapter arrayAdapter;
+    private Toolbar toolbar;
+    private LinearLayout addListFAB;
+    private FirebaseAuth mAuth ;
     private SearchView searchView;
     private ProgressBar progressBar;
     private boolean isSelectOn;
@@ -143,10 +143,20 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
     //delegate between dialog and activity
     @Override
     public void addList(String listName) {
-            Shopping_list result = new Shopping_list("",mAuth.getCurrentUser().getUid(),listName);
+        if (listName.isEmpty()) {
+            Toast.makeText(this, "can't create list without a name", Toast.LENGTH_SHORT);
+            return;
+        }
+        boolean add = true;
+        for (Shopping_list list:shopping_Lists) {
+            add = !list.getShopping_list_title().equals(listName);
+        }
+        if (add) {
+            Shopping_list result = new Shopping_list("", mAuth.getCurrentUser().getUid(), listName);
             shopping_Lists.add(result);
-            Firebase2.pushUserList(mAuth.getCurrentUser().getUid(),result);
+            Firebase2.pushUserList(mAuth.getCurrentUser().getUid(), result);
             arrayAdapter.notifyDataSetChanged();
+        }else Toast.makeText(this,"couldn't add list because of already existing list with same name",Toast.LENGTH_SHORT).show();
     }
 
     @Override
