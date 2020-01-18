@@ -53,24 +53,11 @@ final public class Firebase2 {
             removeListItems(listID);
         }
     }
+
     public static void removeListItems(String listID){
         firebaseDBSetRequest("shopping_list_items/"+listID,null);
     }
-    /*
-    public static String pushListItems(List<SessionProduct> list){
 
-   /* public static String pushListItems(List<SessionProduct> list){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        DatabaseReference myRef = database.getReference("shopping_list_items");
-
-        String pushedKey = myRef.push().getKey();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put(pushedKey, list);
-        myRef.updateChildren(map);
-        return pushedKey;
-    } */
 
     /**
      * Retrieve from firebase DB the lists that other people shared or gave permissions to the user.
@@ -88,6 +75,25 @@ final public class Firebase2 {
                 lists.add(new Shopping_list(listID,uID, listTitle));
 
             }
+            return lists;
+        });
+    }
+
+    public static void getShoppingListMetaDataByID(String listID, String uID, Task<List<Shopping_list>> task)
+    {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference myRef = database.getReference("user_shopping_lists/"+uID);
+
+        Query query = myRef.orderByChild("shopping_list_id").equalTo(listID).limitToFirst(1);
+
+
+        firebaseDBGetRequestWithQuery(query,task,(dataSnapshot) -> {
+            List<Shopping_list> lists = new ArrayList<>();
+
+            for(DataSnapshot dss : dataSnapshot.getChildren())
+                lists.add(dss.getValue(Shopping_list.class));
+
             return lists;
         });
     }
