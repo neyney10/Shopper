@@ -99,6 +99,13 @@ public class UserPanelActivity extends AppCompatActivity {
         }
     }
 
+
+    public void onQrBtnClick(View view)
+    {
+        Intent intent = new Intent(this, QrCamera.class);
+        startActivity(intent);
+    }
+
     public void onListBtnClick(View view)
     {
         Intent intent = new Intent(this, ChooseListActivity.class);

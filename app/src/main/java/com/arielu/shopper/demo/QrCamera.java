@@ -51,7 +51,26 @@ FirebaseVisionBarcodeDetector detector ;
         setContentView(R.layout.activity_qr_camera);
 
         Dexter.withActivity(this)
-                .withPermission(Manifest.permission.CAMERA)
+                .withPermission(Manifest.permission.CAMERA )
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        setupCamera() ;
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        Toast.makeText(QrCamera.this , "You must accept permission!" , Toast.LENGTH_LONG) ;
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                    }
+                }).check();
+
+        Dexter.withActivity(this)
+                .withPermission(Manifest.permission.RECORD_AUDIO )
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
@@ -89,7 +108,13 @@ FirebaseVisionBarcodeDetector detector ;
             }
         });
 
+        options = new FirebaseVisionBarcodeDetectorOptions.Builder()
+                .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE)
+                .build() ;
+        detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options) ;
+
     }
+
 
     private void processImage(FirebaseVisionImage image) {
         if(!isDetected)
@@ -138,7 +163,7 @@ FirebaseVisionBarcodeDetector detector ;
                                 .append(item.getContactInfo().getName().getFormattedName())
                                 .append("\n")
                                 .append("Address: ")
-                                .append(item.getContactInfo().getAddresses().get(0).getAddressLines())
+                                .append(item.getContactInfo().getAddresses().get(0).getAddressLines()[0])
                                 .append("\n")
                                 .append("Email: ")
                                 .append(item.getContactInfo().getEmails().get(0).getAddress())
