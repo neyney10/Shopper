@@ -33,6 +33,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -53,7 +54,6 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
 
     private Toolbar toolbar;
     private BottomNavigationView bottomNavigationView;
-    private SearchView searchView;
     private ProgressBar progressBar;
     private PinnedSectionAdapter pinnedSectionAdapter;
     private PinnedSectionListView pinnedSectionListView;
@@ -134,22 +134,6 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
                 }
             }
         });
-        //Filter
-        searchView = findViewById(R.id.list_filter);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                searchView.clearFocus();
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                UserShoppingListActivity.this.pinnedSectionAdapter.getFilter().filter(newText);
-                expandAll();
-                return false;
-            }
-        });
         //PinnedSectionListView
         pinnedSectionAdapter = new PinnedSectionAdapter(this,list);
         pinnedSectionListView = findViewById(R.id.user_list);
@@ -198,9 +182,9 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
         });
         pinnedSectionListView.setPinnedSections(R.layout.list_group);
         //get data
-        progressBar.setVisibility(View.VISIBLE);
         Firebase2.getListItems(this.listObj.getShopping_list_id(), (data) -> {
             if(data == null) return;
+            progressBar.setVisibility(View.VISIBLE);
 
             List<SessionProduct> products = (List<SessionProduct>) data;
             ArrayList<SessionProduct> temp;
@@ -231,8 +215,40 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (isSelectOn)
             getMenuInflater().inflate(R.menu.products_select_mode_menu,menu);
-        else
-            getMenuInflater().inflate(R.menu.user_list_menu,menu);
+        else {
+            getMenuInflater().inflate(R.menu.user_list_menu, menu);
+            MenuItem searchItem = menu.findItem(R.id.search_filter);
+            SearchView searchView = (SearchView) searchItem.getActionView();
+            searchView.setQueryHint("Search...");
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    searchView.clearFocus();
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    UserShoppingListActivity.this.pinnedSectionAdapter.getFilter().filter(newText);
+                    expandAll();
+                    return true;
+                }
+            });
+            searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                    setItemsVisibility(menu,searchItem,false);
+                    return true;
+                }
+
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                    invalidateOptionsMenu();
+                    return true;
+                }
+            });
+
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -383,7 +399,7 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
         Intent intent = new Intent(this, ShoppingListPermissionsActivity.class);
         //intent.putExtra("listID", this.listID);
         //intent.putExtra("listName", this.listName);
-        intent.putExtra("list", listObj);
+        intent.putExtra("list", (Serializable) listObj);
         startActivity(intent);
     }
 
@@ -445,6 +461,12 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
     public float dpToPx(float valueInDp) {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
+    }
+    private void setItemsVisibility(Menu menu, MenuItem exception, boolean visible) {
+        for (int i=0; i<menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item != exception) item.setVisible(visible);
+        }
     }
 }
 

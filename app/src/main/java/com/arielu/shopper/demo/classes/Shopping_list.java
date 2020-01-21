@@ -1,5 +1,8 @@
 package com.arielu.shopper.demo.classes;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 public class Shopping_list implements Serializable
@@ -49,4 +52,5 @@ public class Shopping_list implements Serializable
         return shopping_list_title;
 
     }
+
 }

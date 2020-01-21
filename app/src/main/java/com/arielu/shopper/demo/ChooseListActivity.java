@@ -2,10 +2,12 @@ package com.arielu.shopper.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -15,10 +17,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.arielu.shopper.demo.classes.Shopping_list;
 import com.arielu.shopper.demo.database.Firebase2;
+import com.arielu.shopper.demo.fragments.CollectionPagerAdapter;
+import com.arielu.shopper.demo.fragments.UserListsFragment;
+import com.arielu.shopper.demo.fragments.UserListsSharedFragment;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -29,106 +38,53 @@ import java.util.List;
 
 public class ChooseListActivity extends AppCompatActivity implements DialogAddList.DialogListener
 {
-    private ListView listview ;
-    private ArrayList<Shopping_list> shopping_Lists ;
-    private ListsAdapter arrayAdapter;
-    private Toolbar toolbar;
-    private LinearLayout addListFAB;
-    private FirebaseAuth mAuth ;
-    private SearchView searchView;
+    public Toolbar toolbar;
+    CollectionPagerAdapter collectionPagerAdapter;
+    ViewPager viewPager;
+    TabLayout tabLayout;
     private ProgressBar progressBar;
-    private boolean isSelectOn;
-    private int blue,white;
+    public boolean isSelectOn;
+    public int blue,white;
 
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_list);
 
-        listview = (ListView) findViewById(R.id.lists) ;
+        //ViewPager
+        collectionPagerAdapter = new CollectionPagerAdapter(getSupportFragmentManager());
+        viewPager = findViewById(R.id.pager);
+        viewPager.setAdapter(collectionPagerAdapter);
+        tabLayout = findViewById(R.id.lists_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        shopping_Lists = new ArrayList<Shopping_list>() ;
-        mAuth = FirebaseAuth.getInstance();
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.i("Test", "onPageSelected: "+position);
+                if (isSelectOn&&position!=0)
+                    cancel();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         toolbar = findViewById(R.id.user_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("List's");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        addListFAB = findViewById(R.id.add_list_button);
-
-        searchView = findViewById(R.id.lists_filter);
         progressBar = findViewById(R.id.spinner_loader);
         blue = ContextCompat.getColor(getApplicationContext(),R.color.blue);
         white = ContextCompat.getColor(getApplicationContext(), R.color.white);
-        /* deprecated
-        Observable<List<Shopping_list>> o =  Firebase.getUserLists(mAuth.getCurrentUser().getUid());
-        o.subscribe(new ObserverFirebaseTemplate<List<Shopping_list>>() {
-            @Override
-            public void onNext(List<Shopping_list> lists) {
-                shopping_Lists.clear();
-                shopping_Lists.addAll(lists);
-                arrayAdapter.notifyDataSetChanged();
-            }
-        });
-         */
-
-        Firebase2.getUserLists(mAuth.getCurrentUser().getUid(),(lists) -> {
-            progressBar.setVisibility(View.VISIBLE);
-            addAllItemsToList((List<Shopping_list>)lists);
-            progressBar.setVisibility(View.GONE);
-            arrayAdapter.notifyDataSetChanged();
-        });
-
-        Firebase2.getUserSharedLists(mAuth.getCurrentUser().getUid(),(lists) -> {
-            addAllItemsToList(lists);
-            arrayAdapter.notifyDataSetChanged();
-        });
-
-
-        this.arrayAdapter = new ListsAdapter(this,shopping_Lists);
-        listview.setAdapter(arrayAdapter);
-
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(isSelectOn){
-                    if (arrayAdapter.select(i))
-                        view.setBackgroundColor(blue);
-                    else view.setBackgroundColor(white);
-                    if (arrayAdapter.allSelectedItems()==0)
-                        selectMode(false);
-                    toolbar.setTitle(arrayAdapter.allSelectedItems()+" Selected");
-                }else {
-                    Intent intent = new Intent(ChooseListActivity.this, UserShoppingListActivity.class);
-
-                    Shopping_list listItem = shopping_Lists.get(i);
-                    intent.putExtra("list", listItem);
-                    startActivity(intent);
-                }
-            }
-        });
-        listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                selectMode(true);
-                arrayAdapter.select(i);
-                toolbar.setTitle(arrayAdapter.allSelectedItems()+" Selected");
-                view.setBackgroundColor(blue);
-                return true;
-            }
-        });
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                ChooseListActivity.this.arrayAdapter.getFilter().filter(newText);
-                return true;
-            }
-        });
     }
     public void createNewList(View v){
         DialogFragment newFragment = new DialogAddList();
@@ -136,33 +92,57 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
 
     }
 
-    private synchronized void addAllItemsToList(Collection<Shopping_list> list)
-    {
-        shopping_Lists.addAll(list);
-    }
     //delegate between dialog and activity
     @Override
     public void addList(String listName) {
-        if (listName.isEmpty()) {
-            Toast.makeText(this, "can't create list without a name", Toast.LENGTH_SHORT);
-            return;
-        }
-        boolean add = true;
-        for (Shopping_list list:shopping_Lists) {
-            add = !list.getShopping_list_title().equals(listName);
-        }
-        if (add) {
-            Shopping_list result = new Shopping_list("", mAuth.getCurrentUser().getUid(), listName);
-            shopping_Lists.add(result);
-            Firebase2.pushUserList(mAuth.getCurrentUser().getUid(), result);
-            arrayAdapter.notifyDataSetChanged();
-        }else Toast.makeText(this,"couldn't add list because of already existing list with same name",Toast.LENGTH_SHORT).show();
+        ((UserListsFragment)currentFragmentDisplay()).addList(listName);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.select_mode_menu,menu);
-        return super.onCreateOptionsMenu(menu);
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (isSelectOn)
+            getMenuInflater().inflate(R.menu.select_mode_menu,menu);
+        else {
+            getMenuInflater().inflate(R.menu.lists_menu, menu);
+            MenuItem searchItem = menu.findItem(R.id.search_filter);
+            SearchView searchView = (SearchView) searchItem.getActionView();
+            searchView.setQueryHint("Search...");
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    searchView.clearFocus();
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    switch (viewPager.getCurrentItem()){
+                        case 0:
+                            ((UserListsFragment)currentFragmentDisplay()).getFilter(newText);
+                            break;
+                        case 1:
+                            ((UserListsSharedFragment)currentFragmentDisplay()).getFilter(newText);
+                            break;
+                        default:
+                    }
+                    return false;
+                }
+            });
+            searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                    tabLayout.setVisibility(View.GONE);
+                    return true;
+                }
+
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                    tabLayout.setVisibility(View.VISIBLE);
+                    return true;
+                }
+            });
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -171,6 +151,8 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
             case R.id.delete:
                 remove();
                 return true;
+            case R.id.search_filter:
+
                 default:
                     return super.onOptionsItemSelected(item);
         }
@@ -178,34 +160,51 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
 
     @Override
     public void onBackPressed() {
-        if (isSelectOn) {
-            selectMode(false);
+        if (isSelectOn)
             cancel();
-        }
         else
             super.onBackPressed();
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
     private void cancel(){
-        arrayAdapter.cancel();
+        switch (viewPager.getCurrentItem()){
+            case 0:
+            case 1:
+                ((UserListsFragment)collectionPagerAdapter.getItem(0)).cancel();
+                break;
+                default:
+                    return;
+        }
     }
     private void remove(){
-        Toast.makeText(getApplicationContext(),arrayAdapter.allSelectedItems()+" items were deleted.",Toast.LENGTH_SHORT);
-        ArrayList<String> listIds = (ArrayList<String>) arrayAdapter.remove();
-        selectMode(false);
-        Firebase2.removeListItems(listIds);
-        Firebase2.setUserLists(mAuth.getCurrentUser().getUid(),shopping_Lists);
+        switch (viewPager.getCurrentItem()){
+            case 0:
+                ((UserListsFragment)currentFragmentDisplay()).remove();
+                selectMode(false);
+                break;
+                default: return;
+        }
+    }
+    private void setSearchView(){
 
     }
-
-    private void selectMode(boolean state){
+    public void selectMode(boolean state){
         isSelectOn=state;
         if (state) {
-            toolbar.setVisibility(View.VISIBLE);
-            addListFAB.setVisibility(View.GONE);
+            ((UserListsFragment)collectionPagerAdapter.getItem(0)).FAB.setVisibility(View.GONE);
         }
         else {
-            toolbar.setVisibility(View.GONE);
-            addListFAB.setVisibility(View.VISIBLE);
+            toolbar.setTitle("List's");
+            ((UserListsFragment)collectionPagerAdapter.getItem(0)).FAB.setVisibility(View.VISIBLE);
         }
+        invalidateOptionsMenu();
+    }
+    private Fragment currentFragmentDisplay(){
+        return collectionPagerAdapter.getItem(viewPager.getCurrentItem());
     }
 }
