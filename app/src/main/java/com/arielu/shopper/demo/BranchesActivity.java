@@ -74,7 +74,7 @@ public class BranchesActivity extends AppCompatActivity {
         });
 
 
-        this.adapter = new ArrayAdapter<Branch>(BranchesActivity.this,R.layout.item_test_sample,R.id.sample_text_view,branches_filtered);
+        this.adapter = new ArrayAdapter<Branch>(BranchesActivity.this,android.R.layout.simple_list_item_1,branches_filtered);
         lv_branches_list.setAdapter(this.adapter);
 
         ///////////////////////////////////////////////////////////////
