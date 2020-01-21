@@ -81,7 +81,7 @@ public class SearchItemsActivity extends AppCompatActivity implements DialogAddP
         lv_products_filtered = findViewById(R.id.lv_products_filtered);
         lv_products_filtered.setOnItemClickListener(this::onItemClick);
 
-        adapter = new ArrayAdapter<Product>(SearchItemsActivity.this,R.layout.item_test_sample,R.id.sample_text_view,products_filtered);
+        adapter = new ArrayAdapter<Product>(SearchItemsActivity.this,android.R.layout.simple_list_item_1,products_filtered);
         lv_products_filtered.setAdapter(adapter);
 
         // searchbox

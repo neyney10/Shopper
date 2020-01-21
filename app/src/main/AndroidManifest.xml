@@ -21,7 +21,6 @@
         <activity android:name=".UserMessageBoardActivity" />
         <activity android:name=".QrCamera" />
 
-        <activity android:name=".BranchProductsActivity" />
         <activity android:name=".BranchesActivity" />
         <activity android:name=".ShoppingListPermissionsActivity" />
         <activity android:name=".SearchItemsActivity" />
