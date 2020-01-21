@@ -20,18 +20,10 @@
     android:elevation="4dp"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
     android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/list_filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/user_toolbar"
-            android:background="@color/white" />
-
         <view class="com.arielu.shopper.demo.pinnedsectionlistview.PinnedSectionListView"
             android:id="@+id/user_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintTop_toBottomOf="@id/list_filter"
             android:clipToPadding="false"
             android:paddingBottom="60dp"
             android:scrollbarStyle="outsideOverlay" />
