@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
@@ -237,6 +238,7 @@ public class UserShoppingListActivity extends AppCompatActivity implements Dialo
             searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
                 @Override
                 public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                    searchView.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(),R.anim.search_view_fade_in));
                     setItemsVisibility(menu,searchItem,false);
                     return true;
                 }

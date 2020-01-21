@@ -7,7 +7,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.VideoView;
 
 
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static int SPLASH_TIME_OUT = 10000;
     private VideoView videoBG ;
+    private ImageView imageView;
     MediaPlayer mMediaPlayer;
     int mCurrentVideoPosition ;
     @Override
@@ -50,7 +53,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        imageView = findViewById(R.id.imageView);
+        Animation animUpDown;
 
+        // load the animation
+        animUpDown = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.image_up_down);
+
+        // start the animation
+        imageView.startAnimation(animUpDown);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -59,18 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         } , SPLASH_TIME_OUT);
-    }
-
-    public void exitClick(View view)
-    {
-        System.exit(0);
-    }
-    public void continueClick(View view)
-    {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-
-
     }
 
 
