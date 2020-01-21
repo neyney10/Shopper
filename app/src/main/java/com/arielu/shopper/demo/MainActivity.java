@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.VideoView;
 
@@ -13,6 +14,8 @@ import android.widget.VideoView;
 public class MainActivity extends AppCompatActivity {
 
 
+
+    private static int SPLASH_TIME_OUT = 10000;
     private VideoView videoBG ;
     MediaPlayer mMediaPlayer;
     int mCurrentVideoPosition ;
@@ -47,6 +50,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        } , SPLASH_TIME_OUT);
     }
 
     public void exitClick(View view)

@@ -22,10 +22,10 @@
             android:onClick="btn_testClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.139"
+            app:layout_constraintHorizontal_bias="0.141"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.75"
+            app:layout_constraintVertical_bias="0.793"
             app:srcCompat="@drawable/send_message" />
 
         <TextView
@@ -49,10 +49,10 @@
             android:onClick="onListBtnClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.808"
+            app:layout_constraintHorizontal_bias="0.89"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.352"
+            app:layout_constraintVertical_bias="0.349"
             app:srcCompat="@drawable/shopping_list" />
 
         <ImageView
@@ -62,10 +62,10 @@
             android:onClick="onQrBtnClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.826"
+            app:layout_constraintHorizontal_bias="0.876"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.732"
+            app:layout_constraintVertical_bias="0.762"
             app:srcCompat="@drawable/favorite_star2" />
 
         <TextView
@@ -99,15 +99,15 @@
             android:layout_width="107dp"
             android:layout_height="68dp"
             android:fontFamily="casual"
-            android:textAlignment="center"
             android:text="הרשימות שלי"
+            android:textAlignment="center"
             android:textSize="25dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.756"
+            app:layout_constraintHorizontal_bias="0.888"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.499" />
+            app:layout_constraintVertical_bias="0.504" />
 
         <TextView
             android:id="@+id/textView4"
@@ -129,39 +129,40 @@
             android:layout_width="96dp"
             android:layout_height="83dp"
             android:text="בדיקת מחיר"
+            android:textAlignment="center"
             android:textSize="25dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.765"
+            app:layout_constraintHorizontal_bias="0.839"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.904" />
+            app:layout_constraintVertical_bias="0.943" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="96dp"
             android:layout_height="83dp"
-            android:textAlignment="center"
             android:text="מרכז ההודעות"
+            android:textAlignment="center"
             android:textSize="25dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.133"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.904" />
+            app:layout_constraintVertical_bias="0.939" />
 
         <ImageView
             android:id="@+id/imgbtn_mycart"
-            android:layout_width="154dp"
-            android:layout_height="269dp"
+            android:layout_width="118dp"
+            android:layout_height="204dp"
             android:onClick="imgbtn_mycartClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.062"
+            app:layout_constraintHorizontal_bias="0.102"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.313"
+            app:layout_constraintVertical_bias="0.326"
             app:srcCompat="@drawable/shopping_basket" />
 
         <ImageView
