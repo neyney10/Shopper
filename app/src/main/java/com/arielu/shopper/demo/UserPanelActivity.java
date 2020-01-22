@@ -75,10 +75,12 @@ public class UserPanelActivity extends AppCompatActivity {
                     ((TextView)findViewById(R.id.tv_list_total_price)).setText(Double.toString(sum)+"₪");
 
                 });
+
+                // update also the button leading to the list itself in session.
+                sessionListID = sessLists.get(sessLists.size()-1).getListID();
             }
 
-            // update also the button leading to the list itself in session.
-            sessionListID = sessLists.get(sessLists.size()-1).getListID();
+
         });
     }
 
