@@ -1,40 +1,27 @@
 package com.arielu.shopper.demo;
 
-import android.content.Intent;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import com.arielu.shopper.demo.classes.Shopping_list;
-import com.arielu.shopper.demo.database.Firebase2;
 import com.arielu.shopper.demo.fragments.CollectionPagerAdapter;
 import com.arielu.shopper.demo.fragments.UserListsFragment;
 import com.arielu.shopper.demo.fragments.UserListsSharedFragment;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class ChooseListActivity extends AppCompatActivity implements DialogAddList.DialogListener
 {
@@ -42,6 +29,7 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
     CollectionPagerAdapter collectionPagerAdapter;
     ViewPager viewPager;
     TabLayout tabLayout;
+    MenuItem searchItem;
     private ProgressBar progressBar;
     public boolean isSelectOn;
     public int blue,white;
@@ -50,12 +38,11 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_list);
-
         //ViewPager
         collectionPagerAdapter = new CollectionPagerAdapter(getSupportFragmentManager());
         viewPager = findViewById(R.id.pager);
         viewPager.setAdapter(collectionPagerAdapter);
-        tabLayout = findViewById(R.id.lists_tabs);
+        tabLayout = viewPager.findViewById(R.id.lists_tabs);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -68,6 +55,8 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
                 Log.i("Test", "onPageSelected: "+position);
                 if (isSelectOn&&position!=0)
                     cancel();
+                if (searchItem.isActionViewExpanded())
+                    searchItem.collapseActionView();
             }
 
             @Override
@@ -104,7 +93,7 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
             getMenuInflater().inflate(R.menu.select_mode_menu,menu);
         else {
             getMenuInflater().inflate(R.menu.lists_menu, menu);
-            MenuItem searchItem = menu.findItem(R.id.search_filter);
+            searchItem = menu.findItem(R.id.search_filter);
             SearchView searchView = (SearchView) searchItem.getActionView();
             searchView.setQueryHint("Search...");
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -128,16 +117,74 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
                     return false;
                 }
             });
+            int tabHeight = tabLayout.getMeasuredHeight();
             searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
                 @Override
                 public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                    tabLayout.setVisibility(View.GONE);
+                    searchView.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(),R.anim.search_view_fade_in));
+                    Animation animation =AnimationUtils.loadAnimation(getApplicationContext(),R.anim.collapse_tablayout);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            ValueAnimator anim = ValueAnimator.ofInt(tabLayout.getMeasuredHeight(),0);
+                            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                    int value = (int) valueAnimator.getAnimatedValue();
+                                    ViewPager.LayoutParams layoutParams = (ViewPager.LayoutParams) tabLayout.getLayoutParams();
+                                    layoutParams.height = value;
+                                    tabLayout.setLayoutParams(layoutParams);
+                                }
+                            });
+                            anim.setDuration(500);
+                            anim.start();
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            tabLayout.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    tabLayout.startAnimation(animation);
                     return true;
                 }
 
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                    tabLayout.setVisibility(View.VISIBLE);
+                    Animation animation =AnimationUtils.loadAnimation(getApplicationContext(),R.anim.expand_tablayout);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            tabLayout.setVisibility(View.VISIBLE);
+                            ValueAnimator anim = ValueAnimator.ofInt(tabLayout.getMeasuredHeight(),tabHeight);
+                            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                    int value = (int) valueAnimator.getAnimatedValue();
+                                    ViewPager.LayoutParams layoutParams = (ViewPager.LayoutParams) tabLayout.getLayoutParams();
+                                    layoutParams.height = value;
+                                    tabLayout.setLayoutParams(layoutParams);
+                                }
+                            });
+                            anim.setDuration(500);
+                            anim.start();
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    tabLayout.startAnimation(animation);
                     return true;
                 }
             });
@@ -151,8 +198,6 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
             case R.id.delete:
                 remove();
                 return true;
-            case R.id.search_filter:
-
                 default:
                     return super.onOptionsItemSelected(item);
         }
@@ -189,9 +234,6 @@ public class ChooseListActivity extends AppCompatActivity implements DialogAddLi
                 break;
                 default: return;
         }
-    }
-    private void setSearchView(){
-
     }
     public void selectMode(boolean state){
         isSelectOn=state;
